@@ -1,0 +1,10 @@
+include ':app'
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+  settingsDir,
+  '../neodocs_module/.android/include_flutter.groovy'
+))
+rootProject.name = "sdkExample"
+
+include ':neodocs_module'
+project(':neodocs_module').projectDir = new File('../neodocs_module')
