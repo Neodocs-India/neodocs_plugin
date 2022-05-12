@@ -35,7 +35,9 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
   bool isComplete = false;
   bool isError = false;
   Color completeColor = AppColors.primaryColor;
+  static const platformCallback = MethodChannel('app.channel.neodocs/native');
 
+  
   late ProcessImageModel process;
   late Map<String, dynamic> data;
   late Map<String,dynamic> endpoint;
@@ -49,6 +51,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
         debugPrint("Lottie Completed");
       }
     });
+    data = widget.map;
     debugPrint(widget.map["apiKey"]);
     process = ProcessImageModel(widget.map["apiKey"]);
 
@@ -92,12 +95,13 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     super.initState();
   }
 
-  void listenToChange(data){
-    debugPrint(data.toString());
-    if (mounted && !data.toString().contains("wss://")) {
-      if (data["statusCode"] != null) {
-        final map = data["body"]["results"];
+  void listenToChange(event){
+    debugPrint(event.toString());
+    if (mounted && !event.toString().contains("wss://")) {
+      if (event["statusCode"] != null) {
+        final map = event["body"]["results"];
         debugPrint("mounted");
+        data = map;
         if (map['processed_flag']!=null && map['processed_flag']) {
           if(isComplete){
             process.socket.close();
@@ -189,6 +193,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
               action: SnackBarAction(
                 label: "YES",
                 onPressed: () {
+                  platformCallback.invokeMethod("nativeCallback",{"status":"0","data":data});
                   Navigator.pop(context);
                 },
                 textColor: Colors.white,
@@ -286,8 +291,10 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                       if (!isError) {
                                         Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                                         SystemNavigator.pop();
+                                        platformCallback.invokeMethod("nativeCallback",{"status":data["status_code"].toString(),"data":data});
                                       } else {
                                         Navigator.of(context).pop();
+                                        platformCallback.invokeMethod("nativeCallback",{"status":data["status_code"].toString(),"data":data});
                                       }
                                     },
                                     child: DarkButtonText(

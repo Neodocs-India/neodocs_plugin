@@ -42,7 +42,7 @@ class _CameraState extends State<CaptureScreen>
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
-  static const platform = MethodChannel('app.channel.neodocs.data');
+  static const platform = MethodChannel('app.channel.neodocs/native');
 
   CameraController? controller;
   XFile? imageFile;

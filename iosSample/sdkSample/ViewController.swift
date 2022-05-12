@@ -20,20 +20,21 @@ class ViewController: UIViewController {
         
         if let flutterEngine = (UIApplication.shared.delegate as? AppDelegate)?.flutterEngine {
             GeneratedPluginRegistrant.register(with: flutterEngine);
-            methodChannel = FlutterMethodChannel(name: "app.channel.neodocs.data",
+            methodChannel = FlutterMethodChannel(name: "app.channel.neodocs/native",
                                                  binaryMessenger: flutterEngine.binaryMessenger)
             methodChannel?.setMethodCallHandler({
                 [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
                 // Note: this method is invoked on the UI thread.
-                guard call.method == "getExtraData" else {
+                if call.method == "getExtraData"  {
+                    self?.getExtraData(result: result)
+                } else if call.method == "nativeCallback"{
+                    self?.nativeCallback(call: call)
+                } else{
                     result(FlutterMethodNotImplemented)
-                    return
                 }
-                self?.getExtraData(result: result)
+                
             })
         }
-        
-        
         
         let button = UIButton(type:UIButton.ButtonType.custom)
         
@@ -65,6 +66,24 @@ class ViewController: UIViewController {
         args["apiKey"] = "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"
         
         result(args)
+    }
+    
+    private func nativeCallback(call: FlutterMethodCall){
+        if let args = call.arguments as? Dictionary<String, Any>,
+           let status = args["status"] as? String{
+            if(status == "0"){
+                // user exited from the process
+                //args["data"] has details of the test if required
+            }else if(status == "200"){
+                //test complete with result
+                //args["data"]
+            } else{
+                //test complete wait error
+                //args["data"]
+            }
+            print(args);
+        }
+    
     }
     
     
