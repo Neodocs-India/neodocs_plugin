@@ -12,7 +12,7 @@ class StepIntroduction extends StatefulWidget {
   final PageController controller;
 
 
-  const StepIntroduction(
+  StepIntroduction(
       {Key? key, required this.controller})
       : super(key: key);
   @override

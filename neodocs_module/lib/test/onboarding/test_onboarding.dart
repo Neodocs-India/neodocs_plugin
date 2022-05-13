@@ -23,62 +23,58 @@ class TestOnBoarding extends StatefulWidget {
 
 class _OnBoardingState extends State<TestOnBoarding> {
   int _page = 0;
-  final PageController _pageController = PageController(
-    initialPage: 0,
-  );
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
+    //WidgetsBinding.instance.addPostFrameCallback((_)=> Future.delayed(const Duration(seconds: 2),()=> setState(() {})));
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.primaryColor,
       body: SafeArea(
-        child: WillPopScope(
-            onWillPop: () => onWillPop(context),
-            child:  Stack(
-                          alignment: Alignment.topCenter,
-                          children: [
-                            PageView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: _buildPages(),
-                              controller: _pageController,
-                              onPageChanged: _onPageViewChange,
-                            ),
-                            Positioned(
-                              left: 20,
-                              top: 10,
-                              child: LightBackButton(
-                                onPressed: (){
-                                  if(_page ==0){
-                                    SystemNavigator.pop();
-                                  }else {
-                                    _pageController.previousPage(
-                                        duration: const Duration(
-                                            milliseconds: 300),
-                                        curve: Curves.easeOut);
-                                  }
-                                },
-                              )
-                            ),
-                          ],
-                        ),
-                      )),
-
-
+          child: WillPopScope(
+        onWillPop: () => onWillPop(context),
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              children: _buildPages(),
+              controller: _pageController,
+              onPageChanged: _onPageViewChange,
+            ),
+            if (_page == 0)
+              StepIntroduction(
+                controller: _pageController,
+              ),
+            Positioned(
+                left: 20,
+                top: 10,
+                child: LightBackButton(
+                  onPressed: () {
+                    if (_page == 0) {
+                      SystemNavigator.pop();
+                    } else {
+                      _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut);
+                    }
+                  },
+                )),
+          ],
+        ),
+      )),
     );
   }
 
   List<Widget> _buildPages() {
     return [
-      StepIntroduction(
-        controller: _pageController,
-      ),
+      Container(),
       StepCollectUrine(
         controller: _pageController,
       ),
