@@ -7,6 +7,7 @@
 
 import UIKit
 import Flutter
+import FlutterPluginRegistrant
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // Instantiate Flutter engine
         self.flutterEngine = FlutterEngine(name: "io.flutter", project: nil)
                 self.flutterEngine?.run(withEntrypoint: nil)
+        GeneratedPluginRegistrant.register(with: flutterEngine!);
         return true
     }
     

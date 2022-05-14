@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		77B7D3741ED3CF69508A4179 /* Pods_sdkSample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF28B8AAB7F2FFC2AD80571C /* Pods_sdkSample.framework */; };
+		FD318338282F7A4000DF44A9 /* NewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD318337282F7A4000DF44A9 /* NewVC.swift */; };
+		FD31833A282F80A300DF44A9 /* FlutterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD318339282F80A300DF44A9 /* FlutterVC.swift */; };
 		FD6302A3281A879100890033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6302A2281A879100890033 /* AppDelegate.swift */; };
 		FD6302A5281A879100890033 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6302A4281A879100890033 /* SceneDelegate.swift */; };
 		FD6302A7281A879100890033 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6302A6281A879100890033 /* ViewController.swift */; };
@@ -39,6 +41,8 @@
 /* Begin PBXFileReference section */
 		2A413856D0D04E33E5E5701E /* Pods-sdkSample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sdkSample.release.xcconfig"; path = "Target Support Files/Pods-sdkSample/Pods-sdkSample.release.xcconfig"; sourceTree = "<group>"; };
 		EAE0662E064F89E77799EDDB /* Pods-sdkSample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sdkSample.debug.xcconfig"; path = "Target Support Files/Pods-sdkSample/Pods-sdkSample.debug.xcconfig"; sourceTree = "<group>"; };
+		FD318337282F7A4000DF44A9 /* NewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVC.swift; sourceTree = "<group>"; };
+		FD318339282F80A300DF44A9 /* FlutterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlutterVC.swift; sourceTree = "<group>"; };
 		FD63029F281A879100890033 /* sdkSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sdkSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD6302A2281A879100890033 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FD6302A4281A879100890033 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -128,6 +132,8 @@
 				FD6302A2281A879100890033 /* AppDelegate.swift */,
 				FD6302A4281A879100890033 /* SceneDelegate.swift */,
 				FD6302A6281A879100890033 /* ViewController.swift */,
+				FD318339282F80A300DF44A9 /* FlutterVC.swift */,
+				FD318337282F7A4000DF44A9 /* NewVC.swift */,
 				FD6302A8281A879100890033 /* Main.storyboard */,
 				FD6302AB281A879400890033 /* Assets.xcassets */,
 				FD6302AD281A879400890033 /* LaunchScreen.storyboard */,
@@ -339,7 +345,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD31833A282F80A300DF44A9 /* FlutterVC.swift in Sources */,
 				FD6302A7281A879100890033 /* ViewController.swift in Sources */,
+				FD318338282F7A4000DF44A9 /* NewVC.swift in Sources */,
 				FD6302A3281A879100890033 /* AppDelegate.swift in Sources */,
 				FD6302A5281A879100890033 /* SceneDelegate.swift in Sources */,
 			);
