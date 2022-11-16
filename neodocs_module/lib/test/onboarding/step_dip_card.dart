@@ -1,25 +1,28 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+import 'dart:developer';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../widgets/bullet_text.dart';
-import '../../widgets/dark_button.dart';
-import 'midstreem_dialog.dart';
+import '../../constants/app_font_family.dart';
+import '../../constants/custom_decorations.dart';
+import '../../widgets/new_bullet_text.dart';
+import '../../widgets/new_elevated_button.dart';
 
 class StepDipCard extends StatefulWidget {
   final PageController controller;
+  const StepDipCard({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
-
-  const StepDipCard(
-      {Key? key, required this.controller})
-      : super(key: key);
   @override
-  State<StatefulWidget> createState() => _StepState();
+  State<StepDipCard> createState() => _StepDipCardState();
 }
 
-class _StepState extends State<StepDipCard>  with TickerProviderStateMixin {
+class _StepDipCardState extends State<StepDipCard>
+    with TickerProviderStateMixin {
   final FocusNode _focusNodeName = FocusNode();
 
   late AnimationController animationController;
@@ -28,6 +31,9 @@ class _StepState extends State<StepDipCard>  with TickerProviderStateMixin {
   void initState() {
     animationController = AnimationController(vsync: this);
     animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        log("Lottie Completed");
+      }
     });
     super.initState();
   }
@@ -37,92 +43,153 @@ class _StepState extends State<StepDipCard>  with TickerProviderStateMixin {
     super.dispose();
     animationController.dispose();
   }
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.topCenter,
-        color: Colors.transparent,
-        margin:  EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      Row(
+    final size = MediaQuery.of(context).size;
+    return SizedBox(
+      height: double.infinity,
+      width: double.infinity,
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              decoration: AppDesign(context).headerDecoration,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 65.h,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
                         children: [
-                           CircleAvatar(
-                            backgroundColor: Colors.white,//Theme.of(context).textTheme.black87,
-                            radius: 20,
-                            child: Text("2",style: Theme.of(context).textTheme.titleLarge,)
-                            ),
-                          const SizedBox(width: 20,),
-                          Flexible(child: Text("Dip the wellness card for 2 seconds and take it out",style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),))
+                          Text(
+                            "2",
+                            style: TextStyle(
+                                color: const Color(0XFF7179C5),
+                                fontSize: 48.sp,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: AppFontFamily.manrope),
+                          ),
+                          SizedBox(
+                            width: size.width * 0.029,
+                          ),
+                          Flexible(
+                              child: AutoSizeText(
+                            "Immerse the card into the urine sample for 2 seconds, then remove.",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ))
                         ],
                       ),
-                      Expanded(child: getAssets())
-                    ],
-                  )
-
-                )),
-            Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    color: Colors.white,),
-                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
-                  clipBehavior: Clip.hardEdge,
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-
-                      BulletText(
-                        child: RichText(
-                          text:  TextSpan(text:'',
-                              style: Theme.of(context).textTheme.labelLarge,
-                              children: <TextSpan>[
-                                TextSpan(text: 'Completely dip the black area of the card in the sample. After taking out, gently tap or shake the card to remove any droplets.\n' ,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ]
-
-                          ),
-                          textAlign: TextAlign.justify,
+                    ),
+                    Expanded(child: getAssets())
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 20.h, right: 20.w, left: 20.w),
+            decoration: AppDesign(context).bodyDecoration,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                NewBulletText(
+                  style: Theme.of(context).primaryTextTheme.titleLarge,
+                  child: Text.rich(
+                    TextSpan(
+                      text: "",
+                      children: [
+                        TextSpan(
+                          text:
+                              "When immersing the card into the sample, make sure ",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  height: 1.2),
                         ),
-                      ),
-                      BulletText(
-                        child: RichText(
-                          text:  TextSpan(text:'',
-                              style: Theme.of(context).textTheme.labelLarge,
-                              children: <TextSpan>[
-                                TextSpan(text:  "Your card starts activating as soon as you dip it. You need to scan the card between 60-90 seconds of activation.",style: Theme.of(context).textTheme.bodyLarge),
-
-                              ]
-
-                          ),
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                      SizedBox(height: 20,),
-
-                      DarkButton(
-                          onPressed: ()=>widget.controller.nextPage(duration: const Duration(milliseconds: 250), curve: Curves.easeIn),
-                          child: const DarkButtonText("Next")),
-
-                    ],
+                        TextSpan(
+                          text: "the black area is dipped completely.",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headlineSmall!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  height: 1.2),
+                        )
+                      ],
+                    ),
                   ),
-
-                )
-          ],
-        )
+                ),
+                NewBulletText(
+                  style: Theme.of(context)
+                      .primaryTextTheme
+                      .titleLarge!
+                      .copyWith(height: 1.2),
+                  child: Text.rich(
+                    TextSpan(
+                      text: "",
+                      children: [
+                        TextSpan(
+                          text: "After removing the card from the sample,",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                        TextSpan(
+                          text: " tap or shake the card gently ",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headlineSmall!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                        TextSpan(
+                          text: " in order to remove excess droplets. ",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                NewElevatedButton(
+                    onPressed: () => widget.controller.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeIn),
+                    text: "Card dipped and shaken"),
+                SizedBox(
+                  height: 8.h,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -135,8 +202,6 @@ class _StepState extends State<StepDipCard>  with TickerProviderStateMixin {
           controller: animationController,
           repeat: true,
           onLoaded: (composition) async {
-            // Configure the AnimationController with the duration of the
-            // Lottie file and start the animation.
             await Future.delayed(const Duration(milliseconds: 200));
             animationController
               ..duration = composition.duration
@@ -146,12 +211,4 @@ class _StepState extends State<StepDipCard>  with TickerProviderStateMixin {
       ),
     );
   }
-  void _showDialog() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const MidStreamDialog();
-        });
-  }
-
 }

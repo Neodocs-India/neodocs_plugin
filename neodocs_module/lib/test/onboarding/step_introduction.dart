@@ -1,157 +1,289 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart';
+import 'dart:ui';
 
-import '../../widgets/bullet_text.dart';
-import '../../widgets/dark_button.dart';
-import 'midstreem_dialog.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import '../../constants/custom_decorations.dart';
+import '../../widgets/new_elevated_button.dart';
 
 class StepIntroduction extends StatefulWidget {
   final PageController controller;
+  final Function(bool) onSkipped;
+  const StepIntroduction({
+    Key? key,
+    required this.controller,
+    required this.onSkipped,
+  }) : super(key: key);
 
-
-  StepIntroduction(
-      {Key? key, required this.controller})
-      : super(key: key);
   @override
-  State<StatefulWidget> createState() => _StepState();
+  State<StepIntroduction> createState() => _StepIntroductionState();
 }
 
-class _StepState extends State<StepIntroduction> {
-  final FocusNode _focusNodeName = FocusNode();
-
-  late AnimationController animationController;
+class _StepIntroductionState extends State<StepIntroduction> {
+  late PlayerState _playerState;
+  late YoutubeMetaData _videoMetaData;
+  late YoutubePlayerController _controller;
 
   @override
   void initState() {
+    _controller = YoutubePlayerController(
+      initialVideoId: 'giEiYGWPmMI',
+      flags: const YoutubePlayerFlags(
+          autoPlay: false,
+          mute: false,
+          loop: true,
+          showLiveFullscreenButton: false),
+    )..addListener(listener);
     super.initState();
+  }
+
+  final bool _isPlayerReady = false;
+
+  void listener() {
+    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
+      setState(() {
+        _playerState = _controller.value.playerState;
+        _videoMetaData = _controller.metadata;
+      });
+    }
   }
 
   @override
   void dispose() {
+    _controller.dispose();
     super.dispose();
-    animationController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.topCenter,
-        color: Colors.transparent,
-        margin:  EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                flex: 5,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-
-                      Text("Take control of your health in 4 simple steps!",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),),
-                       Expanded(child: getAssets())
-                    ],
-                  )
-
-                )),
-            Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15)),
-                color: Colors.white,),
-              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
-              clipBehavior: Clip.hardEdge,
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration: AppDesign(context).headerDecoration,
+          child: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 65.h,
+                ),
+                SizedBox(
+                  height: 85.h,
+                  child: Center(
+                    child: AutoSizeText(
+                      "Unlock all-round wellness in 4 simple steps",
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                            color: Colors.white,
+                          ),
+                      maxLines: 3,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 85.h,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            decoration: AppDesign(context).bodyDecoration,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Stack(
+                fit: StackFit.expand,
+                alignment: Alignment.bottomRight,
                 children: [
-
-                  BulletText(
-                    child: RichText(
-                      text:  TextSpan(text:'',
-                          style: Theme.of(context).textTheme.labelLarge,
-                          children: <TextSpan>[
-                            TextSpan(text: 'Before you take the test, there’s a few steps where you need to be careful.' ,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 52.h,
+                      ),
+                      const Spacer(),
+                      Expanded(
+                        flex: 2,
+                        child: AutoSizeText(
+                          'Before we get to the test, there are a few minor steps that need your attention.',
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .labelMedium!
+                              .copyWith(
+                                  fontSize: 20.sp,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                          textAlign: TextAlign.left,
+                          maxLines: 3,
+                          minFontSize: 1,
+                        ),
+                      ),
+                      const Spacer(),
+                      ListView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        children: [
+                          NewElevatedButton(
+                              margin: EdgeInsets.symmetric(horizontal: 24.w),
+                              onPressed: () {
+                                widget.onSkipped(false);
+                                widget.controller.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeIn);
+                              },
+                              text: "Step-by-Step Guide"),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          Center(
+                            child: Text(
+                              "OR",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
                             ),
-                          ]
-
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
-                  BulletText(
-                    child: RichText(
-                      text:  TextSpan(text:'',
-                          style: Theme.of(context).textTheme.labelLarge,
-                          children: <TextSpan>[
-                            TextSpan(text: 'We’ll guide you through each and every step, so that you don’t miss any crucial details of the test.' ,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Container(
+                              color: Colors.black,
+                              child: YoutubePlayer(
+                                controller: _controller,
+                                progressColors: const ProgressBarColors(
+                                  playedColor: Colors.amber,
+                                  handleColor: Colors.amberAccent,
+                                ),
+                                onReady: () {},
+                                bottomActions: [
+                                  SizedBox(width: 14.0.w),
+                                  CurrentPosition(),
+                                  SizedBox(width: 8.0.w),
+                                  ProgressBar(
+                                      isExpanded: true,
+                                      colors: ProgressBarColors(
+                                          backgroundColor: Theme.of(context)
+                                              .bottomAppBarColor,
+                                          bufferedColor:
+                                              Colors.white.withOpacity(0.2),
+                                          handleColor: const Color(0XFFFCAE69),
+                                          playedColor: Color(0XFFFCAE69))),
+                                  SizedBox(width: 8.0.w),
+                                  RemainingDuration(),
+                                  SizedBox(width: 14.0.w),
+                                ],
+                              ),
                             ),
-                          ]
-
+                          ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          MaterialButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              widget.onSkipped(true);
+                              widget.controller.animateToPage(5,
+                                  duration: const Duration(milliseconds: 600),
+                                  curve: Curves.fastLinearToSlowEaseIn);
+                            },
+                            child: const Text(
+                              'I know how to take the test',
+                              style: TextStyle(
+                                  color: Color(0XFF606060),
+                                  decoration: TextDecoration.underline),
+                            ),
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.justify,
-                    ),
+                      const Spacer(),
+                    ],
                   ),
-                  BulletText(
-                    child: RichText(
-                      text:  TextSpan(text:'',
-                          style: Theme.of(context).textTheme.labelLarge,
-                          children: <TextSpan>[
-                            TextSpan(text:  "Please do not open the pouch containing wellness card unless instructed.\n",style: Theme.of(context).textTheme.bodyLarge),
-                          ]
-
+                  Column(
+                    children: [
+                      Container(
+                        transform: Matrix4.translationValues(0.0, -52, 0.0),
+                        child: ClipRect(
+                          clipBehavior: Clip.hardEdge,
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                            child: Container(
+                              padding: EdgeInsets.all(20.sp),
+                              decoration: AppDesign(context).statusDecoration,
+                              child: SizedBox(
+                                height: 70.h,
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: AutoSizeText.rich(
+                                          TextSpan(text: "", children: [
+                                        TextSpan(
+                                          text: "Do not open ",
+                                          style: Theme.of(context)
+                                              .primaryTextTheme
+                                              .headlineSmall!
+                                              .copyWith(
+                                                  height: 1.2,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary),
+                                        ),
+                                        TextSpan(
+                                            text:
+                                                "the pouch containing test card unless instructed.",
+                                            style: Theme.of(context)
+                                                .primaryTextTheme
+                                                .titleLarge!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary))
+                                      ])),
+                                    ),
+                                    SizedBox(
+                                      width: 5.w,
+                                    ),
+                                    Container(
+                                      height: 60.h,
+                                      width: 60.w,
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(4),
+                                      child: const Text(
+                                        '!',
+                                        style: TextStyle(
+                                            color: Color(0XFFFCAE69),
+                                            fontSize: 30),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: const Color(0XFFFCAE69),
+                                            width: 2),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.justify,
-                    ),
+                    ],
                   ),
-
-                  SizedBox(height: 5,),
-
-                  DarkButton(
-                      onPressed: ()=> _showDialog(),
-                      child: const DarkButtonText("Continue")),
                 ],
               ),
-
-            )
-          ],
+            ),
+          ),
         )
+      ],
     );
   }
-
-  Widget getAssets() {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(vertical: 30),
-        child:  const Image(
-            fit: BoxFit.fitHeight,
-            image: ExactAssetImage("assets/images/img_steps.png")),
-      ),
-    );
-  }
-  void _showDialog() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return  MidStreamDialog(
-            onPressed: (){
-              Navigator.of(context).pop();
-              widget.controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-            },
-          );
-        });
-  }
-
 }

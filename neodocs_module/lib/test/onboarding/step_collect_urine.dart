@@ -1,159 +1,201 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../constants/app_colors.dart';
-import '../../widgets/bullet_text.dart';
-import '../../widgets/dark_button.dart';
-import 'midstreem_dialog.dart';
+import '../../constants/app_font_family.dart';
+import '../../constants/custom_decorations.dart';
+import '../../widgets/new_bullet_text.dart';
+import '../../widgets/new_elevated_button.dart';
+import '../dialogs/mid_stream.dart';
 
 class StepCollectUrine extends StatefulWidget {
   final PageController controller;
 
-
-  const StepCollectUrine(
-      {Key? key, required this.controller})
+  const StepCollectUrine({Key? key, required this.controller})
       : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => _StepState();
+  State<StepCollectUrine> createState() => _StepCollectUrineState();
 }
 
-class _StepState extends State<StepCollectUrine>  with TickerProviderStateMixin {
-  final FocusNode _focusNodeName = FocusNode();
-
+class _StepCollectUrineState extends State<StepCollectUrine>
+    with TickerProviderStateMixin {
   late AnimationController animationController;
 
   @override
   void initState() {
     animationController = AnimationController(vsync: this);
     animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        log("Lottie Completed");
+      }
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     animationController.dispose();
+    super.dispose();
   }
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.topCenter,
-        color: Colors.transparent,
-        margin:  EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      Row(
+    var brightness = MediaQuery.of(context).platformBrightness;
+    bool darkModeOn = brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    return SizedBox(
+      height: double.infinity,
+      width: double.infinity,
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              decoration: AppDesign(context).headerDecoration,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 65.h,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
                         children: [
-                           CircleAvatar(
-                            backgroundColor: Colors.white,//Theme.of(context).textTheme.black87,
-                            radius: 20,
-                            child: Text("1",style: Theme.of(context).textTheme.titleLarge,)
+                          Text(
+                            "1",
+                            style: TextStyle(
+                              color: const Color(0XFF7179C5),
+                              fontSize: 48.sp,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: AppFontFamily.manrope,
                             ),
-                          const SizedBox(width: 20,),
-                  Flexible(
-                    child: Text("Collect your urine in the cup",style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),))
+                          ),
+                          SizedBox(
+                            width: size.width * 0.029,
+                          ),
+                          Flexible(
+                            child: AutoSizeText(
+                              "Collect your urine sample in the provided container.",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                  ),
+                            ),
+                          )
                         ],
                       ),
-                       Expanded(child: getAssets())
-                    ],
-                  )
-
-                )),
-            Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    color: Colors.white,),
-                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
-                  clipBehavior: Clip.hardEdge,
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-
-                      BulletText(
-                        child: RichText(
-                          text:  TextSpan(text:'',
-                              style: Theme.of(context).textTheme.labelLarge,
-                              children: <TextSpan>[
-                                TextSpan(text: 'Urinate in the cup while ' ,
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                    children: [
-                                    TextSpan(text:  "mid-stream",
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: AppColors.primaryColor,
-                                          decoration:TextDecoration.underline,
-                                        ),
-                                        recognizer: TapGestureRecognizer()..onTap = ()=> _showDialog()),
-                                      TextSpan(text:  "*.\n",
-                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                            color: AppColors.primaryColor,
-                                          )),
-                                    ]),
-                              ]
-
-                          ),
-                          textAlign: TextAlign.justify,
+                    ),
+                    Expanded(child: getAssets(size))
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 20.h, left: 20.w, right: 20.w),
+            decoration: AppDesign(context).bodyDecoration,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                NewBulletText(
+                  style: Theme.of(context).primaryTextTheme.titleLarge,
+                  child: Text.rich(
+                    TextSpan(
+                      text: "",
+                      children: [
+                        TextSpan(
+                          text: "Urinate into the container",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
                         ),
-                      ),
-                      BulletText(
-                        child: RichText(
-                          text:  TextSpan(text:'',
-                              style: Theme.of(context).textTheme.labelLarge,
-                              children: <TextSpan>[
-                                TextSpan(text:  "Make sure to fill the cup till right under the top.\n",style: Theme.of(context).textTheme.bodyLarge),
-                              ]
-
-                          ),
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                      const SizedBox(height: 10,),
-                      RichText(
-                        text:  TextSpan(text:'*Collect mid-stream urine.',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppColors.primaryColor,
-                              decoration:TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()..onTap = ()=> _showDialog()),
-                        textAlign: TextAlign.center,
-
-                        ),
-                      const SizedBox(height: 20,),
-
-                      DarkButton(
-                          onPressed: ()=>widget.controller.nextPage(duration: const Duration(milliseconds: 250), curve: Curves.easeIn),
-                          child: const DarkButtonText("Next")),
-
-                    ],
+                        TextSpan(
+                            text: " mid-stream*.",
+                            style: Theme.of(context)
+                                .primaryTextTheme
+                                .headlineSmall!
+                                .copyWith(
+                                    decoration: TextDecoration.underline,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => _showDialog())
+                      ],
+                    ),
                   ),
-
-                )
-          ],
-        )
+                ),
+                NewBulletText(
+                  style: Theme.of(context).primaryTextTheme.titleLarge,
+                  child: Text.rich(
+                    TextSpan(
+                      text: "",
+                      children: [
+                        TextSpan(
+                          text: "Make sure the container is filled",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                        TextSpan(
+                          text: " till top.",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headlineSmall!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 16.h,
+                ),
+                Text.rich(TextSpan(
+                    text: "*What’s mid-stream urine?",
+                    style: TextStyle(
+                      color: const Color(0XFF6B60F1),
+                      fontFamily: AppFontFamily.metropolis,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => _showDialog())),
+                SizedBox(
+                  height: 24.h,
+                ),
+                NewElevatedButton(
+                    onPressed: _showDialog, text: "Urine Collected"),
+                SizedBox(
+                  height: 8.h,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget getAssets() {
+  Widget getAssets(Size size) {
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(size.height * 0.0092),
         child: Lottie.asset(
           "assets/lottie/1_fill_cup.json",
           controller: animationController,
@@ -170,12 +212,19 @@ class _StepState extends State<StepCollectUrine>  with TickerProviderStateMixin 
       ),
     );
   }
+
   void _showDialog() {
     showDialog(
         context: context,
         builder: (context) {
-          return const MidStreamDialog();
+          return NewMidStreamDialog(
+            onPressed: () {
+              widget.controller.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeIn);
+              Navigator.of(context).pop();
+            },
+          );
         });
   }
-
 }

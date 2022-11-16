@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:neodocs_module/test/onboarding/step_collect_urine.dart';
@@ -7,10 +6,9 @@ import 'package:neodocs_module/test/onboarding/step_introduction.dart';
 import 'package:neodocs_module/test/onboarding/step_place_card.dart';
 import 'package:neodocs_module/test/onboarding/step_pouch.dart';
 import 'package:neodocs_module/test/onboarding/step_start_timer.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:neodocs_module/widgets/new_custom_appbar.dart';
 
 import '../../constants/app_colors.dart';
-import '../../widgets/light_back_button.dart';
 
 class TestOnBoarding extends StatefulWidget {
   final String? userId;
@@ -23,6 +21,7 @@ class TestOnBoarding extends StatefulWidget {
 
 class _OnBoardingState extends State<TestOnBoarding> {
   int _page = 0;
+  bool skipped = false;
   final PageController _pageController = PageController();
 
   @override
@@ -51,21 +50,29 @@ class _OnBoardingState extends State<TestOnBoarding> {
             if (_page == 0)
               StepIntroduction(
                 controller: _pageController,
+                onSkipped: (skip) {
+                  setState(() {
+                    skipped = skip;
+                  });
+                },
               ),
             Positioned(
-                left: 20,
-                top: 10,
-                child: LightBackButton(
-                  onPressed: () {
-                    if (_page == 0) {
-                      SystemNavigator.pop();
-                    } else {
-                      _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOut);
-                    }
-                  },
-                )),
+              left: 20,
+              top: 10,
+              child: MyAppBar(
+                onPressed: () {
+                  if (_page == 0) {
+                    SystemNavigator.pop();
+                  } else if (skipped) {
+                    _pageController.jumpToPage(0);
+                  } else {
+                    _pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut);
+                  }
+                },
+              ),
+            ),
           ],
         ),
       )),
@@ -89,6 +96,7 @@ class _OnBoardingState extends State<TestOnBoarding> {
       ),
       StepStartTimer(
         controller: _pageController,
+        skipped: skipped,
       ),
     ];
   }

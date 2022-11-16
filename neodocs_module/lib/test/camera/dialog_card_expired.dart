@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:neodocs_module/widgets/new_elevated_button.dart';
 
 import '../../constants/app_colors.dart';
 import '../../widgets/bullet_text.dart';
-import '../../widgets/dark_button.dart';
 
 class CardExpiredDialog extends StatefulWidget {
   final VoidCallback onPressed;
 
-  const CardExpiredDialog({Key? key, required this.onPressed}) : super(key: key);
+  const CardExpiredDialog({Key? key, required this.onPressed})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _DialogState();
@@ -39,46 +40,50 @@ class _DialogState extends State<CardExpiredDialog> {
               Container(
                 height: 10,
               ),
-               Center(
-                 child: Container(
-                    padding: const EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.width * 0.5,
-                    child:  const Image(
-                        fit: BoxFit.fitHeight,
-                        image: ExactAssetImage("assets/images/img_card_expired.png")),
-                  ),
-               ),
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.width * 0.5,
+                  child: const Image(
+                      fit: BoxFit.fitHeight,
+                      image: ExactAssetImage(
+                          "assets/images/img_card_expired.png")),
+                ),
+              ),
               Container(
                 height: 10,
               ),
               Align(
                 alignment: Alignment.center,
-                child: Text("Wellness card expired!",style:  Theme.of(context).textTheme.titleLarge,),
+                child: Text(
+                  "Wellness card expired!",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
               Container(
                 height: 20,
               ),
-               BulletText(
-                 child: Text(
-                    "This wellness card has expired. Using an expired wellness card may lead to inaccurate results.",
-                    style:  Theme.of(context).textTheme.labelLarge,
-                    textAlign: TextAlign.center,
-                  ),
-               ),
+              BulletText(
+                child: Text(
+                  "This wellness card has expired. Using an expired wellness card may lead to inaccurate results.",
+                  style: Theme.of(context).textTheme.labelLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
               BulletText(
                 child: Text(
                   "Please purchase a new wellness card and test again to get correct results.",
-                  style:  Theme.of(context).textTheme.labelLarge,
+                  style: Theme.of(context).textTheme.labelLarge,
                   textAlign: TextAlign.center,
                 ),
               ),
               Container(
                 height: 20,
               ),
-              DarkButton(
-                child: const DarkButtonText("Buy wellness card"),
-                onPressed: (){
+              NewElevatedButton(
+                text: "Buy wellness card",
+                onPressed: () {
                   Navigator.pop(context);
                   widget.onPressed();
                 },
@@ -87,7 +92,7 @@ class _DialogState extends State<CardExpiredDialog> {
                 height: 10,
               ),
               TextButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.of(context).pop();
                   //Navigator.of(context).pop();
                 },
@@ -99,14 +104,16 @@ class _DialogState extends State<CardExpiredDialog> {
                   ),
                 ),
                 style: TextButton.styleFrom(
-                  primary: AppColors.primaryColor,
-                  side:  const BorderSide(color: AppColors.primaryColor, width: 2),
+                  backgroundColor: AppColors.primaryColor,
+                  disabledForegroundColor: AppColors.secondaryColor,
+                  side:
+                      const BorderSide(color: AppColors.primaryColor, width: 2),
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15))),
                 ),
               ),
               Container(
-                height: 10,
+                height: 12,
               ),
             ],
           ),
