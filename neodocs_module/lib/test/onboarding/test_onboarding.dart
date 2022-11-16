@@ -23,12 +23,12 @@ class TestOnBoarding extends StatefulWidget {
 
 class _OnBoardingState extends State<TestOnBoarding> {
   int _page = 0;
-  final PageController _pageController = PageController();
-
+  final PageController _pageController = PageController(initialPage: 0);
   @override
   void initState() {
     super.initState();
-    //WidgetsBinding.instance.addPostFrameCallback((_)=> Future.delayed(const Duration(seconds: 2),()=> setState(() {})));
+    WidgetsBinding.instance?.addPostFrameCallback((_) =>
+        Future.delayed(const Duration(seconds: 1), () => setState(() {})));
   }
 
   @override
@@ -42,16 +42,15 @@ class _OnBoardingState extends State<TestOnBoarding> {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: _buildPages(),
+            PageView.builder(
+              itemBuilder: (context, position) {
+                return _buildPages(position);
+              },
+              allowImplicitScrolling: true,
               controller: _pageController,
               onPageChanged: _onPageViewChange,
+              itemCount: 6,
             ),
-            if (_page == 0)
-              StepIntroduction(
-                controller: _pageController,
-              ),
             Positioned(
                 left: 20,
                 top: 10,
@@ -72,29 +71,47 @@ class _OnBoardingState extends State<TestOnBoarding> {
     );
   }
 
-  List<Widget> _buildPages() {
-    return [
-      Container(),
-      StepCollectUrine(
-        controller: _pageController,
-      ),
-      StepPouch(
-        controller: _pageController,
-      ),
-      StepDipCard(
-        controller: _pageController,
-      ),
-      StepPlaceCard(
-        controller: _pageController,
-      ),
-      StepStartTimer(
-        controller: _pageController,
-      ),
-    ];
+  Widget _buildPages(int position) {
+    switch (position) {
+      case 0:
+        return StepIntroduction(
+          controller: _pageController,
+        );
+      case 1:
+        return StepCollectUrine(
+          controller: _pageController,
+        );
+      case 2:
+        return StepPouch(
+          controller: _pageController,
+        );
+      case 3:
+        return StepDipCard(
+          controller: _pageController,
+        );
+      case 4:
+        return StepPlaceCard(
+          controller: _pageController,
+        );
+      case 5:
+        return StepStartTimer(
+          controller: _pageController,
+        );
+      default:
+        return StepIntroduction(
+          controller: _pageController,
+        );
+    }
   }
 
   Future<bool> onWillPop(BuildContext context) async {
-    return true;
+    if (_page == 0) {
+      SystemNavigator.pop();
+    } else {
+      _pageController.previousPage(
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    }
+    return false;
   }
 
   _onPageViewChange(int value) {

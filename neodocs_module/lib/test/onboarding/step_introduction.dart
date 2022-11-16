@@ -147,8 +147,9 @@ class _StepState extends State<StepIntroduction> {
         builder: (context) {
           return  MidStreamDialog(
             onPressed: (){
+              widget.controller.animateToPage(1,duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+              //widget.controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
               Navigator.of(context).pop();
-              widget.controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
             },
           );
         });

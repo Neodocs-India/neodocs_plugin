@@ -68,12 +68,13 @@ class _CameraState extends State<CaptureScreen>
 
   @override
   void initState() {
+    debugPrint("init State");
+
     super.initState();
     _ambiguate(WidgetsBinding.instance)?.addObserver(this);
     _getDeviceInfo();
 
     getExtraData();
-
     onNewCameraSelected(widget.cameras[0]);
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -99,12 +100,12 @@ class _CameraState extends State<CaptureScreen>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
+
   }
 
   void getExtraData() async {
     var data = await platform.invokeMethod('getExtraData');
     if (data != null) {
-      debugPrint("in flutter");
       debugPrint(data.toString());
       extraData = Map<String,String>.from(data);
     }
@@ -297,7 +298,7 @@ class _CameraState extends State<CaptureScreen>
 
   void showInSnackBar(String message) {
     // ignore: deprecated_member_use
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
@@ -554,13 +555,6 @@ class _CameraState extends State<CaptureScreen>
       _focusModeControlRowAnimationController.forward();
       _flashModeControlRowAnimationController.reverse();
       _exposureModeControlRowAnimationController.reverse();
-    }
-  }
-
-  void onAudioModeButtonPressed() {
-    enableAudio = !enableAudio;
-    if (controller != null) {
-      onNewCameraSelected(controller!.description);
     }
   }
 

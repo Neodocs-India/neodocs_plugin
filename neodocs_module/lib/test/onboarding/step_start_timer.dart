@@ -306,6 +306,7 @@ class _StepState extends State<StepStartTimer>  with TickerProviderStateMixin {
   }
   _startCapture() async {
     List<CameraDescription> cameras = await availableCameras();
+    debugPrint("Cameras ${cameras.length.toString()}");
     final results =  await Navigator.of(context).push(MaterialPageRoute(builder: (_)=> CaptureScreen(cameras: cameras, startTime: _startTime)));
     if(results!=null){
       widget.controller.jumpToPage(0);
