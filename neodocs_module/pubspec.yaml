@@ -32,7 +32,7 @@ dependencies:
   rxdart: ^0.27.0
   web_socket_channel: ^2.2.0
 
-  camera: ^0.9.4+14
+  camera: ^0.10.0+4
   connectivity_plus: ^2.2.1
   device_info_plus: ^3.2.1
   wakelock: ^0.6.1+2
