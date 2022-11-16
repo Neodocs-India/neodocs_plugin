@@ -396,7 +396,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                             },
                                             text: isError
                                                 ? "Try Again"
-                                                : "Continue Button",
+                                                : "Continue",
                                           ),
                                         ),
                                       ]))

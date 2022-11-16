@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -12,7 +13,9 @@ import 'package:neodocs_package/widgets/dark_back_button.dart';
 import 'package:r_scan/r_scan.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../widgets/custom_app_bar.dart';
 import '../../widgets/dark_button.dart';
+import '../../widgets/light_button.dart';
 import '../../widgets/toast_widget.dart';
 import 'dialog_card_expired.dart';
 import 'dialog_no_card_found.dart';
@@ -22,7 +25,12 @@ class CaptureScreen extends StatefulWidget {
   final DateTime startTime;
   final Map user;
 
-  const CaptureScreen({Key? key, required this.cameras, required this.startTime, required this.user}) : super(key: key);
+  const CaptureScreen(
+      {Key? key,
+      required this.cameras,
+      required this.startTime,
+      required this.user})
+      : super(key: key);
 
   @override
   _CameraState createState() {
@@ -64,8 +72,8 @@ class _CameraState extends State<CaptureScreen>
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
-  late Map<String,String> extraData;// = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
-
+  late Map<String, dynamic>
+      extraData; // = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
 
   @override
   void initState() {
@@ -103,24 +111,17 @@ class _CameraState extends State<CaptureScreen>
   }
 
   void getExtraData() async {
-    extraData = Map<String,String>.from(widget.user);
-
-    /*var data = await platform.invokeMethod('getExtraData');
-    if (data != null) {
-      debugPrint("in flutter");
-      debugPrint(data.toString());
-      extraData = Map<String,String>.from(data);
-    }*/
+    extraData = Map<String, dynamic>.from(widget.user);
+    log(extraData.toString());
   }
 
-  _getDeviceInfo() async{
+  _getDeviceInfo() async {
     if (Platform.isAndroid) {
       _deviceData = _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
     } else if (Platform.isIOS) {
       _deviceData = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
     }
   }
-
 
   @override
   void dispose() {
@@ -147,7 +148,8 @@ class _CameraState extends State<CaptureScreen>
     }
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
@@ -157,76 +159,67 @@ class _CameraState extends State<CaptureScreen>
     );
   }
 
-  Widget bodyWidget(context){
-    return SafeArea(
-      child: Container(
-        color: Colors.white,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
+  Widget bodyWidget(context) {
+    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          cameraWidget(context),
+          Positioned(
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: EdgeInsets.only(top: size.height * 0.01, left: 0.01),
               child: Stack(
                 alignment: Alignment.centerLeft,
                 children: [
-                  const DarkBackButton(
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Text(
-                      "Scan Card",
-                      style: Theme.of(context).textTheme.titleLarge,
+                  customAppBar(
+                    padding: 16,
+                    lightButton: false,
+                    title: Text(
+                      'Scan Card',
+                      style: Theme.of(context)
+                          .textTheme
+                          .displaySmall
+                          ?.copyWith(color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: Container(
-                  padding:  EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
-                  margin: EdgeInsets.only(bottom: MediaQuery.of(context).size.width * 0.05 ),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: cameraWidget(context)
-                  )
-              ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: size.width * 0.119),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Spacer(),
+                LightButton(
+                    onPressed:
+                        controller != null && controller!.value.isInitialized
+                            ? onTakePictureButtonPressed
+                            : null,
+                    child: const LightButtonText("Take photo")),
+                SizedBox(
+                  height: size.height * 0.046,
+                ),
+              ],
             ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-
-                  SizedBox(height: 20,),
-                  DarkButton(
-                      onPressed:  controller != null &&
-                          controller!.value.isInitialized
-                  ? onTakePictureButtonPressed
-                      : null,
-                      child:const DarkButtonText("Take photo")),
-                  SizedBox(height: 10,),
-                  SizedBox(height: 10,),
-
-                ],
-              ),
-            ),
-
-
-          ],
-        ),
+          ),
+        ],
       ),
     );
-
   }
+
   Widget cameraWidget(context) {
     if (controller == null || !controller!.value.isInitialized) {
       return Container();
     }
     var camera = controller!.value;
     // fetch screen size
-    final size = Size(MediaQuery.of(context).size.width*0.9, MediaQuery.of(context).size.height *0.7);
+    final size = MediaQuery.of(context).size;
 
     // calculate scale depending on screen and camera ratios
     // this is actually size.aspectRatio / (1 / camera.aspectRatio)
@@ -247,36 +240,39 @@ class _CameraState extends State<CaptureScreen>
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
-      return Listener(
-        onPointerDown: (_) => _pointers++,
-        onPointerUp: (_) => _pointers--,
-        child: CameraPreview(
-          controller!,
-          child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onScaleStart: _handleScaleStart,
-                  onScaleUpdate: _handleScaleUpdate,
-                  onTapDown: (TapDownDetails details) =>
-                      onViewFinderTap(details, constraints),
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1,bottom: MediaQuery.of(context).size.height * 0.075),
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.fitHeight,
-                            image: AssetImage('packages/neodocs_package/assets/images/img_card_frame.png'),
-                          ),
-                        ),
-                      ),
-                    ],
+    return Listener(
+      onPointerDown: (_) => _pointers++,
+      onPointerUp: (_) => _pointers--,
+      child: CameraPreview(
+        controller!,
+        child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onScaleStart: _handleScaleStart,
+            onScaleUpdate: _handleScaleUpdate,
+            onTapDown: (TapDownDetails details) =>
+                onViewFinderTap(details, constraints),
+            child: Stack(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.175,
+                      bottom: MediaQuery.of(context).size.height * 0.125),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.fitHeight,
+                      image: AssetImage(
+                          'packages/neodocs_package/assets/images/img_card_frame.png'),
+                    ),
                   ),
-                );
-              }),
-        ),
-      );
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
   }
 
   void _handleScaleStart(ScaleStartDetails details) {
@@ -294,7 +290,6 @@ class _CameraState extends State<CaptureScreen>
 
     await controller!.setZoomLevel(_currentScale);
   }
-
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -339,7 +334,8 @@ class _CameraState extends State<CaptureScreen>
         setState(() {});
       }
       if (cameraController.value.hasError) {
-        showInSnackBar('Camera error ${cameraController.value.errorDescription}');
+        showInSnackBar(
+            'Camera error ${cameraController.value.errorDescription}');
       }
       if (!cameraController.value.isCaptureOrientationLocked) {
         cameraController.lockCaptureOrientation(DeviceOrientation.portraitUp);
@@ -347,10 +343,10 @@ class _CameraState extends State<CaptureScreen>
       }
       /*unawaited(cameraController.startImageStream((CameraImage cameraImage) {
         debugPrint('image available ${cameraImage.width}x${cameraImage.height}');
-        *//*final results = decode(cameraImage);
+        */ /*final results = decode(cameraImage);
         if(results!=null){
           debugPrint(results.text);
-        }*//*
+        }*/ /*
       }));*/
     });
 
@@ -360,12 +356,12 @@ class _CameraState extends State<CaptureScreen>
         // The exposure mode is currently not supported on the web.
         ...!kIsWeb
             ? <Future<Object?>>[
-          cameraController.getMinExposureOffset().then(
-                  (double value) => _minAvailableExposureOffset = value),
-          cameraController
-              .getMaxExposureOffset()
-              .then((double value) => _maxAvailableExposureOffset = value)
-        ]
+                cameraController.getMinExposureOffset().then(
+                    (double value) => _minAvailableExposureOffset = value),
+                cameraController
+                    .getMaxExposureOffset()
+                    .then((double value) => _maxAvailableExposureOffset = value)
+              ]
             : <Future<Object?>>[],
         cameraController
             .getMaxZoomLevel()
@@ -381,23 +377,27 @@ class _CameraState extends State<CaptureScreen>
     if (mounted) {
       setState(() {});
       Toast(context).showToastCamera("Pinch To Zoom");
-      Future.delayed(const Duration(seconds: 4),(){
-        Toast(context).showToastCamera("Align the card to the Borders",);
+      Future.delayed(const Duration(seconds: 4), () {
+        Toast(context).showToastCamera(
+          "Align the card to the Borders",
+        );
       });
     }
   }
 
   void onTakePictureButtonPressed() {
-
     debugPrint("captureImage ");
     //_myAnalytics.trackMethod(MixPanelUtils.MP_Event_Capture);
-    Map<String,String> extraInfo = {};
-    extraInfo["lensDirection"]= controller!.description.lensDirection.toString();
-    extraInfo["sensorOrientation"]= controller!.description.sensorOrientation.toString();
-    extraInfo["aspectRatio"]= controller!.value.aspectRatio.toString();
-    extraInfo["deviceOrientation"]= controller!.value.deviceOrientation.toString();
-    extraInfo["exposureMode"]= controller!.value.exposureMode.toString();
-    extraInfo["flashMode"]= controller!.value.flashMode.toString();
+    Map<String, String> extraInfo = {};
+    extraInfo["lensDirection"] =
+        controller!.description.lensDirection.toString();
+    extraInfo["sensorOrientation"] =
+        controller!.description.sensorOrientation.toString();
+    extraInfo["aspectRatio"] = controller!.value.aspectRatio.toString();
+    extraInfo["deviceOrientation"] =
+        controller!.value.deviceOrientation.toString();
+    extraInfo["exposureMode"] = controller!.value.exposureMode.toString();
+    extraInfo["flashMode"] = controller!.value.flashMode.toString();
     extraInfo["phone_model"] = _deviceData["model"];
     extraInfo["phone_os"] = _deviceData["systemVersion"];
 
@@ -433,34 +433,36 @@ class _CameraState extends State<CaptureScreen>
             result = reader.decode(bitmap);*/
             result = await RScan.scanImageMemory(await file.readAsBytes());
 
-            if(result.message == null) {
+            if (result.message == null) {
               throw "no card found";
             }
-          }catch(ex){
-            showDialog(context: context, builder: (context) {
-              return const NoCardDialog();
-            });
+          } catch (ex) {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return const NoCardDialog();
+                });
             //Toast(context).showToastCamera("Error in image");
             return;
           }
           final card = validateCard(result.message!);
 
-           if(card == null) {
-             return;
-           }
+          if (card == null) {
+            return;
+          }
 
           debugPrint(result.message!);
 
           //showInSnackBar('Picture saved to ${file.path}');
           debugPrint("captureImage path : ${file.path}");
           debugPrint("captureImage name : ${file.name}");
-          Map<String , dynamic> map = {};
+          Map<String, dynamic> map = {};
           map["path"] = file.path;
-          map["uId"] = extraData["userId"];//add userId to here
+          map["uId"] = extraData["userId"]; //add userId to here
           map["firstName"] = extraData["firstName"];
           map["lastName"] = extraData["lastName"];
           map["gender"] = extraData["gender"];
-          map["dateOfBirth"] = int.parse(extraData["dateOfBirth"]??"");
+          map["dateOfBirth"] = int.parse(extraData["dateOfBirth"].toString());
           map["testId"] = const Uuid().v4();
           map["processed_flag"] = false;
           map["startTime"] = widget.startTime.millisecondsSinceEpoch;
@@ -470,31 +472,32 @@ class _CameraState extends State<CaptureScreen>
           map["isComplete"] = false;
           map["extraInfo"] = extraInfo;
 
-          map["apiKey"] = extraData["apiKey"];//add apiKey to here
+          map["apiKey"] = extraData["apiKey"]; //add apiKey to here
 
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>RecheckImageScreen(map: map,ratio :controller!.value.aspectRatio)));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (_) => RecheckImageScreen(
+                  map: map, ratio: controller!.value.aspectRatio)));
         }
-
       }
     });
   }
 
-  Map<String,dynamic>? validateCard(String code){
-    if(code.isEmpty) {
+  Map<String, dynamic>? validateCard(String code) {
+    if (code.isEmpty) {
       return null;
     }
-    if(code.contains("qr_batch")){
-        _showDialog(CardExpiredDialog(onPressed: (){
-          //navigate to shop screen
-        }));
-        return null;
-
-    }else{
+    if (code.contains("qr_batch")) {
+      _showDialog(CardExpiredDialog(onPressed: () {
+        //navigate to shop screen
+      }));
+      return null;
+    } else {
       try {
         String deCode = utf8.decode(base64.decode(code));
         //Toast(context).showToastCamera(deCode);
         if (deCode.contains("BATCH")) {
-          Map<String, dynamic> card = json.decode(deCode)  as Map<String, dynamic>;
+          Map<String, dynamic> card =
+              json.decode(deCode) as Map<String, dynamic>;
           if (card["BATCH"] == "5") {
             return card;
           }
@@ -502,7 +505,7 @@ class _CameraState extends State<CaptureScreen>
           _showDialog(const NoCardDialog());
           return null;
         }
-      }catch (ex){
+      } catch (ex) {
         _showDialog(const NoCardDialog());
         return null;
       }
@@ -510,12 +513,14 @@ class _CameraState extends State<CaptureScreen>
     return null;
   }
 
-  _showDialog(Widget widget){
-    showDialog(context: context, builder: (context) {
-      return widget;
-    });
+  _showDialog(Widget widget) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return widget;
+        });
   }
-  
+
   /*Result? decode(CameraImage image) {
     var plane = image.planes.first;
     LuminanceSource source = RGBLuminanceSource(
@@ -611,7 +616,6 @@ class _CameraState extends State<CaptureScreen>
       showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
     });
   }
-
 
   Future<XFile?> stopVideoRecording() async {
     final CameraController? cameraController = controller;
@@ -713,7 +717,6 @@ class _CameraState extends State<CaptureScreen>
     }
   }
 
-
   Future<XFile?> takePicture() async {
     final CameraController? cameraController = controller;
     if (cameraController == null || !cameraController.value.isInitialized) {
@@ -789,8 +792,6 @@ class _CameraState extends State<CaptureScreen>
     };
   }
 }
-
-
 
 /// This allows a value of type T or T? to be treated as a value of type T?.
 ///
