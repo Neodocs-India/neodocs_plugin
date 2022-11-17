@@ -1,8 +1,8 @@
 # This is a generated file; do not edit or check into version control.
-camera=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera-0.9.7+1/
-camera_android=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera_android-0.9.7+1/
+camera=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera-0.10.0+4/
+camera_android=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera_android-0.10.0+4/
 camera_avfoundation=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera_avfoundation-0.9.7+1/
-camera_web=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera_web-0.2.1+6/
+camera_web=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/camera_web-0.3.0+1/
 connectivity_plus=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity_plus-2.3.9/
 connectivity_plus_linux=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity_plus_linux-1.3.1/
 connectivity_plus_macos=/home/swastik/snap/flutter/common/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity_plus_macos-1.2.6/
