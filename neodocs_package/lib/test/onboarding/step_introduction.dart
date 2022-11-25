@@ -29,7 +29,7 @@ class _StepIntroductionState extends State<StepIntroduction> {
   @override
   void initState() {
     _controller = YoutubePlayerController(
-      initialVideoId: 'giEiYGWPmMI',
+      initialVideoId: 'ZPhzIoAGw0A',
       flags: const YoutubePlayerFlags(
           autoPlay: false,
           mute: false,
