@@ -4,7 +4,8 @@ import '../../constants/app_colors.dart';
 import '../../widgets/bullet_text.dart';
 
 class WaitedEnoughDialog extends StatefulWidget {
-  const WaitedEnoughDialog({Key? key, required this.onPressed}) : super(key: key);
+  const WaitedEnoughDialog({Key? key, required this.onPressed})
+      : super(key: key);
   final VoidCallback onPressed;
   @override
   State<StatefulWidget> createState() {
@@ -39,16 +40,19 @@ class _DialogState extends State<WaitedEnoughDialog> {
               ),
               Align(
                 alignment: Alignment.center,
-                child: Text("Note",style:  Theme.of(context).textTheme.titleLarge,),
+                child: Text(
+                  "Note",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
               Container(
                 height: 30,
               ),
-               Text(
-                  "You should only use this if you think 60 seconds have already passed after you dipped the card in the sample and took it out.\n",
-                  style:  Theme.of(context).textTheme.labelLarge,
-                  textAlign: TextAlign.justify,
-                ),
+              Text(
+                "You should only use this if you think 60 seconds have already passed after you dipped the card in the sample and took it out.\n",
+                style: Theme.of(context).textTheme.labelLarge,
+                textAlign: TextAlign.justify,
+              ),
               Container(
                 height: 4,
               ),
@@ -58,9 +62,8 @@ class _DialogState extends State<WaitedEnoughDialog> {
                   child: Text(
                     "Scanning the card before 60 seconds may cause the test results to be inaccurate.",
                     //⚈
-                    style:  Theme.of(context).textTheme.labelLarge,
+                    style: Theme.of(context).textTheme.labelLarge,
                     textAlign: TextAlign.justify,
-
                   ),
                 ),
               ),
@@ -68,22 +71,23 @@ class _DialogState extends State<WaitedEnoughDialog> {
                 height: 30,
               ),
               TextButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.of(context).pop();
                   widget.onPressed();
                 },
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primaryColor,
+                  side:
+                      const BorderSide(color: AppColors.primaryColor, width: 2),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     "Yes, I have waited enough",
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                ),
-                style: TextButton.styleFrom(
-                  primary: AppColors.primaryColor,
-                  side:  const BorderSide(color: AppColors.primaryColor, width: 2),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
                 ),
               ),
               Container(

@@ -1,36 +1,37 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:neodocs_module/test/camera/capture_screen.dart';
-import 'package:neodocs_module/test/onboarding/dialog_waited_enough.dart';
-import 'package:neodocs_module/widgets/bullet_text.dart';
-import 'package:neodocs_module/widgets/dark_button.dart';
 import 'package:simple_timer/simple_timer.dart';
-import '../../constants/app_colors.dart';
-import 'dialog_start_timer.dart';
+import '../../constants/app_font_family.dart';
+import '../../constants/custom_decorations.dart';
+import '../../widgets/new_bullet_text.dart';
+import '../../widgets/new_elevated_button.dart';
+import '../dialogs/start_timer.dart';
+import '../dialogs/waited_enough.dart';
 
 class StepStartTimer extends StatefulWidget {
   final PageController controller;
+  final bool skipped;
+  const StepStartTimer({
+    Key? key,
+    required this.controller,
+    required this.skipped,
+  }) : super(key: key);
 
-
-  const StepStartTimer(
-      {Key? key, required this.controller})
-      : super(key: key);
   @override
-  State<StatefulWidget> createState() => _StepState();
+  State<StepStartTimer> createState() => _StepStartTimerState();
 }
 
-class _StepState extends State<StepStartTimer>  with TickerProviderStateMixin {
-
+class _StepStartTimerState extends State<StepStartTimer>
+    with TickerProviderStateMixin {
   late TimerController _timerController;
 
   bool _isStarted = false;
 
-  String timeLeft ="60";
+  String timeLeft = "60";
 
   bool isComplete = false;
 
@@ -39,278 +40,440 @@ class _StepState extends State<StepStartTimer>  with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _timerController = TimerController(this);
+    if (!widget.skipped) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(
+            const Duration(milliseconds: 100),
+            () => _startTimer(),
+          ));
+    }
   }
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return Container(
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.topCenter,
-        color: Colors.transparent,
-        margin:  EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                           CircleAvatar(
-                            backgroundColor: Colors.white,//Theme.of(context).textTheme.black87,
-                            radius: 20,
-                            child: Text("4",style: Theme.of(context).textTheme.titleLarge,)
-                            ),
-                          const SizedBox(width: 20,),
-                          Flexible(child: Text("Place the wellness card on the control pad, and start the timer",style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),))
-                        ],
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.6,
-                                  height: MediaQuery.of(context).size.width * 0.6,
-                                  child: Center(
-                                    child: SimpleTimer(
-                                      duration: const Duration(seconds: 60),
-                                      controller: _timerController,
-                                      onStart: (){},
-                                      onEnd: (){
-                                        setState(() {
-                                          isComplete = true;
-                                        });
-                                      },
-                                      valueListener: (duration){
-                                        setState(() {
-                                          timeLeft = "${duration.inSeconds}";
-                                        });
-                                      },
-                                      backgroundColor: Colors.white.withOpacity(0.1),
-                                      progressIndicatorColor: Colors.white,
-                                      displayProgressText: false,
-                                      strokeWidth: 15,
-                                    ),
-                                  )),
-
-                              isComplete?
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.2,
-                                    height: MediaQuery.of(context).size.width * 0.2,
-                                    child: const Image(
-                                      fit: BoxFit.scaleDown,
-                                      image: ExactAssetImage(
-                                          "assets/images/ic_white_tick.png"),
-                                    ),
-                                  ):
-                              Text.rich(TextSpan(
-                                text: timeLeft,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white,fontSize: 40),
-                                children: [
-                                  TextSpan(text: "\nseconds", style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white,fontSize: 14),)
-                                ]
-                              ),
-                              textAlign: TextAlign.center,)
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-
-                )),
-            isComplete?
-            Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    color: Colors.white,),
-                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
-                  clipBehavior: Clip.hardEdge,
-              alignment: Alignment.bottomCenter,
+    final size = MediaQuery.of(context).size;
+    return SizedBox(
+      height: double.infinity,
+      width: double.infinity,
+      child: Column(children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            width: double.infinity,
+            decoration: AppDesign(context).headerDecoration,
+            child: SafeArea(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-
-                      RichText(
-                        text:  TextSpan(text:'Please scan the card immediately.',
-                          style: Theme.of(context).textTheme.bodyLarge,
-
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 40,),
-
-                      DarkButton(
-                          onPressed: _startCapture,
-                          child: const DarkButtonText("Scan my card")),
-
-                    ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 65.h,
                   ),
-
-                ):
-           Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15)),
-                    color: Colors.white,),
-                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
-                  clipBehavior: Clip.hardEdge,
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-
-                      _isStarted?
-
-                      Column(
-                        children: [
-                          BulletText(
-                            child: RichText(
-                              text:  TextSpan(text:'',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  children: <TextSpan>[
-                                    TextSpan(text: 'Scan the card immediately after the timer ends for accurate results.' ,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ]
-
-                              ),
-                              textAlign: TextAlign.justify,
+                  SizedBox(
+                    height: 65.h,
+                    child: Padding(
+                      padding: EdgeInsets.all(4.sp),
+                      child: isComplete
+                          ? AutoSizeText(
+                              "Your card has activated!",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                  ),
+                              textAlign: TextAlign.center,
+                            )
+                          : Row(
+                              children: [
+                                Text(
+                                  "4",
+                                  style: TextStyle(
+                                      color: const Color(0XFF7179C5),
+                                      fontSize: 48.sp,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: AppFontFamily.manrope),
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.029,
+                                ),
+                                Flexible(
+                                  child: AutoSizeText(
+                                    _isStarted
+                                        ? "Scan the card immediately after the timer ends."
+                                        : "Activation begins as soon as you immerse the card in the sample.",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                        ),
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                          BulletText(
-                            child: RichText(
-                              text:  TextSpan(text:'',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  children: <TextSpan>[
-
-                                    TextSpan(text: 'If you weren\'t able to start the timer within a few seconds of dipping, click the ' ,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    TextSpan(text:  "I have waited enough",
-                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        )),
-                                    TextSpan(text: ' button below to ensure card is scanned in the window of 60-90 seconds post dipping.' ,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ]
-
-                              ),
-                              textAlign: TextAlign.justify,
-                            ),
-                          ),
-                        ],
-                      ):
-                      Column(
-                        children: [
-                          BulletText(
-                            child: RichText(
-                              text:  TextSpan(text:'',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  children: <TextSpan>[
-                                    TextSpan(text: 'This 60 seconds timer will help you to scan the card between 60-90 seconds of dipping in the sample.\n' ,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ]
-
-                              ),
-                              textAlign: TextAlign.justify,
-                            ),
-                          ),
-                          BulletText(
-                            child: RichText(
-                              text:  TextSpan(text:'',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  children: <TextSpan>[
-                                    TextSpan(text: 'This is assuming there’s a small gap of a few seconds between dipping the card and starting this timer.' ,
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ]
-
-                              ),
-                              textAlign: TextAlign.justify,
-                            ),
-                          ),
-
-                        ],
-                      ),
-                      SizedBox(height: 20,),
-
-                      _isStarted?
-                      TextButton(
-                        onPressed: _showWaitedEnoughDialog,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "I have waited enough",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                        style: TextButton.styleFrom(
-                          primary: Colors.teal,
-                          onSurface: Colors.yellow,
-                          side: const BorderSide(color: AppColors.primaryColor, width: 2),
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(15))),
-                        ),
-                      )
-                          :
-                      DarkButton(
-                          onPressed: (){
-                            _showTimerDialog();
-
-                          },
-                          child: const DarkButtonText("Start timer")),
-
-                    ],
+                    ),
                   ),
-
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 212.w,
+                                  child: SimpleTimer(
+                                    duration: const Duration(seconds: 60),
+                                    controller: _timerController,
+                                    onStart: () {},
+                                    onEnd: () {
+                                      setState(() {
+                                        isComplete = true;
+                                      });
+                                    },
+                                    valueListener: (duration) {
+                                      setState(() {
+                                        timeLeft = "${59 - duration.inSeconds}";
+                                      });
+                                    },
+                                    backgroundColor:
+                                        Colors.white.withOpacity(0.1),
+                                    progressIndicatorColor: Colors.white,
+                                    displayProgressText: false,
+                                    strokeWidth: 18.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Center(
+                                child: isComplete
+                                    ? Container(
+                                        width: 0.2.sw,
+                                        height: 0.2.sw,
+                                        padding:
+                                            EdgeInsets.only(bottom: 0.01.sh),
+                                        child: const Image(
+                                          fit: BoxFit.scaleDown,
+                                          image: ExactAssetImage(
+                                              "assets/icon/ic_white_tick.png"),
+                                        ),
+                                      )
+                                    : Padding(
+                                        padding:
+                                            EdgeInsets.only(bottom: 0.01.sh),
+                                        child: Text.rich(
+                                          TextSpan(
+                                              text: timeLeft,
+                                              style: TextStyle(
+                                                  fontSize: 40.sp,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontFamily:
+                                                      AppFontFamily.manrope,
+                                                  color: Colors.white),
+                                              children: [
+                                                TextSpan(
+                                                  text: "\nseconds",
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontFamily:
+                                                          AppFontFamily.manrope,
+                                                      color: Colors.white),
+                                                )
+                                              ]),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 24.h,
+                        ),
+                        Text(
+                          getProcessMessage(),
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: AppFontFamily.manrope,
+                              color: Colors.white),
+                          textAlign: TextAlign.center,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 20.h),
+          decoration: AppDesign(context).bodyDecoration,
+          child: isComplete
+              ? Column(
+                  children: [
+                    NewBulletText(
+                      style: Theme.of(context).primaryTextTheme.titleLarge,
+                      child: Text.rich(
+                        TextSpan(
+                          text:
+                              "Please scan the card immediately in order to receive results with maximum accuracy.",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                      ),
+                    ),
+                    NewElevatedButton(
+                      onPressed: () => _startCapture(),
+                      text: "Scan my card",
+                    ),
+                    SizedBox(
+                      height: 8.h,
+                    ),
+                  ],
                 )
-          ],
-        )
+              : _isStarted
+                  ? Column(
+                      children: [
+                        NewBulletText(
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(height: 1.2),
+                          child: Text.rich(
+                            TextSpan(
+                              text:
+                                  "If you were unable to start the timer within a few seconds of withdrawing the card, click on the “I have waited enough” button below to ensure that the card is scanned during the window period of 60-90 seconds post-dipping.",
+                              style: Theme.of(context)
+                                  .primaryTextTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      height: 1.2,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10.h), // NewElevatedButton has margin
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
+                          child: TextButton(
+                            onPressed: _showWaitedEnoughDialog,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.h),
+                              child: Text(
+                                "I have waited enough",
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withOpacity(0.5),
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: AppFontFamily.manrope,
+                                ),
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              primary: Colors.white.withOpacity(0.05),
+                              backgroundColor: Colors.white.withOpacity(0.05),
+                              minimumSize: Size(double.infinity, 40.h),
+                              side: const BorderSide(
+                                  color: Color(0XFF6B60F1), width: 1),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15))),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16.h,
+                        ),
+                      ],
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        NewBulletText(
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(height: 1.2),
+                          child: Text.rich(
+                            TextSpan(
+                              text: "",
+                              children: [
+                                TextSpan(
+                                  text:
+                                      "The 60 second timer will aid in scanning the card in the right time range (i.e ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                TextSpan(
+                                  text: "between 60-90 seconds after dipping ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headlineSmall!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                TextSpan(
+                                  text: ") for the highest accuracy. ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        NewBulletText(
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(height: 1.2),
+                          child: Text.rich(
+                            TextSpan(
+                              text: "",
+                              children: [
+                                TextSpan(
+                                  text: "This takes into account a ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                TextSpan(
+                                  text: "seconds long gap ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headlineSmall!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                TextSpan(
+                                  text: "between ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                TextSpan(
+                                  text:
+                                      "dipping the card & starting the timer. ",
+                                  style: Theme.of(context)
+                                      .primaryTextTheme
+                                      .headlineSmall!
+                                      .copyWith(
+                                          height: 1.2,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        NewElevatedButton(
+                            margin: EdgeInsets.all(24.w),
+                            onPressed: () => _showTimerDialog(),
+                            text: "Start Timer"),
+                        SizedBox(
+                          height: 8.h,
+                        ),
+                      ],
+                    ),
+        ),
+      ]),
     );
+  }
+
+  String getProcessMessage() {
+    final time = int.parse(timeLeft);
+    if (time == 60) {
+      return "";
+    } else if (time > 50) {
+      return "Please wait for timer";
+    } else if (time > 30) {
+      return "Absorbing sample";
+    } else if (time > 10) {
+      return "Chemical reaction in process";
+    } else {
+      return "Color assay activated";
+    }
   }
 
   void _showTimerDialog() {
     showDialog(
         context: context,
         builder: (context) {
-          return  StartTimerDialog(onStarted: _startTimer);
+          return NewStartTimerDialog(onPressed: _startTimer);
         });
   }
+
   void _showWaitedEnoughDialog() {
     showDialog(
         context: context,
         builder: (context) {
-          return  WaitedEnoughDialog(onPressed: _startCapture);
+          return NewWaitedEnoughDialog(onPressed: _startCapture);
         });
   }
-  void _startTimer(){
+
+  void _startTimer() {
     _startTime = DateTime.now();
     _timerController.start();
     setState(() {
       _isStarted = true;
     });
   }
+
   _startCapture() async {
     List<CameraDescription> cameras = await availableCameras();
-    debugPrint("Cameras ${cameras.length.toString()}");
-    final results =  await Navigator.of(context).push(MaterialPageRoute(builder: (_)=> CaptureScreen(cameras: cameras, startTime: _startTime)));
-    if(results!=null){
-      widget.controller.jumpToPage(0);
-    }
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => CaptureScreen(cameras: cameras, startTime: _startTime),
+        settings: const RouteSettings(name: "CaptureScreen")));
   }
 }
-

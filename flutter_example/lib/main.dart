@@ -1,10 +1,22 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:neodocs_package/neodocs_package.dart';
+
+import 'constants/app_themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(
+    ScreenUtilInit(
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (BuildContext context, Widget? child) {
+        return const MyApp();
+      },
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,9 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppThemes.newTheme,
 
       builder: BotToastInit(), //important for toast in the library
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -44,8 +54,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  final Map<String,String> map = {
+  final Map<String, String> map = {
     "userId": "userId",
     "firstName": "firstName",
     "lastName": "lastName",
@@ -55,14 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
   };
 
   void startTest() {
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => TestOnBoarding(user:map)));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => TestOnBoarding(user: map)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
         title: Text(widget.title),
       ),
       body: Center(
@@ -70,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             MaterialButton(
-              onPressed: ()=>startTest(),
+              onPressed: () => startTest(),
               child: const Text("Start Test"),
             )
           ],

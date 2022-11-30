@@ -5,6 +5,7 @@ import 'package:wakelock/wakelock.dart';
 
 import '../../constants/app_colors.dart';
 import '../../widgets/light_back_button.dart';
+import '../../widgets/new_custom_appbar.dart';
 import 'step_collect_urine.dart';
 import 'step_dip_card.dart';
 import 'step_introduction.dart';
@@ -23,6 +24,7 @@ class TestOnBoarding extends StatefulWidget {
 
 class _OnBoardingState extends State<TestOnBoarding> {
   int _page = 0;
+  bool skipped = false;
   final PageController _pageController = PageController();
 
   @override
@@ -51,21 +53,29 @@ class _OnBoardingState extends State<TestOnBoarding> {
             if (_page == 0)
               StepIntroduction(
                 controller: _pageController,
+                onSkipped: (skip) {
+                  setState(() {
+                    skipped = skip;
+                  });
+                },
               ),
             Positioned(
-                left: 20,
-                top: 10,
-                child: LightBackButton(
-                  onPressed: () {
-                    if (_page == 0) {
-                      SystemNavigator.pop();
-                    } else {
-                      _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOut);
-                    }
-                  },
-                )),
+              left: 20,
+              top: 10,
+              child: MyAppBar(
+                onPressed: () {
+                  if (_page == 0) {
+                    SystemNavigator.pop();
+                  } else if (skipped) {
+                    _pageController.jumpToPage(0);
+                  } else {
+                    _pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut);
+                  }
+                },
+              ),
+            ),
           ],
         ),
       )),
@@ -89,7 +99,8 @@ class _OnBoardingState extends State<TestOnBoarding> {
       ),
       StepStartTimer(
         controller: _pageController,
-        user : widget.user,
+        user: widget.user,
+        skipped: skipped,
       ),
     ];
   }

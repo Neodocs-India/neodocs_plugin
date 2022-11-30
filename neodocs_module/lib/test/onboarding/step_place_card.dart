@@ -1,25 +1,28 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+import 'dart:developer';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../widgets/bullet_text.dart';
-import '../../widgets/dark_button.dart';
-import 'midstreem_dialog.dart';
+import '../../constants/app_font_family.dart';
+import '../../constants/custom_decorations.dart';
+import '../../widgets/new_bullet_text.dart';
+import '../../widgets/new_elevated_button.dart';
 
 class StepPlaceCard extends StatefulWidget {
   final PageController controller;
+  const StepPlaceCard({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
-
-  const StepPlaceCard(
-      {Key? key, required this.controller})
-      : super(key: key);
   @override
-  State<StatefulWidget> createState() => _StepState();
+  State<StepPlaceCard> createState() => _StepPlaceCardState();
 }
 
-class _StepState extends State<StepPlaceCard>  with TickerProviderStateMixin {
+class _StepPlaceCardState extends State<StepPlaceCard>
+    with TickerProviderStateMixin {
   final FocusNode _focusNodeName = FocusNode();
 
   late AnimationController animationController;
@@ -28,87 +31,132 @@ class _StepState extends State<StepPlaceCard>  with TickerProviderStateMixin {
   void initState() {
     animationController = AnimationController(vsync: this);
     animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        log("Lottie Completed");
+      }
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     animationController.dispose();
+    super.dispose();
   }
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.topCenter,
-        color: Colors.transparent,
-        margin:  EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      Row(
+    final size = MediaQuery.of(context).size;
+    return SizedBox(
+      height: double.infinity,
+      width: double.infinity,
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              decoration: AppDesign(context).headerDecoration,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 65.h,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
                         children: [
-                           CircleAvatar(
-                            backgroundColor: Colors.white,//Theme.of(context).textTheme.black87,
-                            radius: 20,
-                            child: Text("3",style: Theme.of(context).textTheme.titleLarge,)
-                            ),
-                          const SizedBox(width: 20,),
-                          Flexible(child: Text("Place the wellness card on the control pad, and start the timer",style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),))
+                          Text(
+                            "3",
+                            style: TextStyle(
+                                color: const Color(0XFF7179C5),
+                                fontSize: 48,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: AppFontFamily.manrope),
+                          ),
+                          SizedBox(
+                            width: size.width * 0.029,
+                          ),
+                          Flexible(
+                              child: AutoSizeText(
+                            "Now, place the test card on the control pad, & start the timer.",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ))
                         ],
                       ),
-                       Expanded(child: getAssets())
-                    ],
-                  )
-
-                )),
-            Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15)),
-                color: Colors.white,),
-              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
-              clipBehavior: Clip.hardEdge,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-
-                  BulletText(
-                    child: RichText(
-                      text:  TextSpan(text:'',
-                          style: Theme.of(context).textTheme.labelLarge,
-                          children: <TextSpan>[
-                            TextSpan(text: ' Make sure to align the wellness card inside the blue area of the control pad.\n' ,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ]
-
-                      ),
-                      textAlign: TextAlign.justify,
+                    ),
+                    Expanded(child: getAssets())
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(top: 20.h, right: 20.w, left: 20.w),
+            decoration: AppDesign(context).bodyDecoration,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                NewBulletText(
+                  style: Theme.of(context).primaryTextTheme.titleLarge,
+                  child: Text.rich(
+                    TextSpan(
+                      text: "",
+                      children: [
+                        TextSpan(
+                          text: "Make sure that the test card is ",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                        TextSpan(
+                          text:
+                              "properly aligned in accordance to the central area ",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .headlineSmall!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                        TextSpan(
+                          text: "of the control pad. ",
+                          style: Theme.of(context)
+                              .primaryTextTheme
+                              .titleLarge!
+                              .copyWith(
+                                  height: 1.2,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 20,),
-
-                  DarkButton(
-                      onPressed: ()=>widget.controller.nextPage(duration: const Duration(milliseconds: 250), curve: Curves.easeIn),
-                      child: const DarkButtonText("Next")),
-
-                ],
-              ),
-
+                ),
+                NewElevatedButton(
+                    onPressed: () => widget.controller.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeIn),
+                    text: "Card Placed"),
+                SizedBox(
+                  height: 8.h,
+                ),
+              ],
             ),
-          ],
-        )
+          )
+        ],
+      ),
     );
   }
 
@@ -116,7 +164,7 @@ class _StepState extends State<StepPlaceCard>  with TickerProviderStateMixin {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(10),
-        child:  Lottie.asset(
+        child: Lottie.asset(
           "assets/lottie/3_place_strip_on_pad.json",
           controller: animationController,
           repeat: true,
@@ -132,13 +180,4 @@ class _StepState extends State<StepPlaceCard>  with TickerProviderStateMixin {
       ),
     );
   }
-  void _showDialog() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const MidStreamDialog();
-        });
-  }
-
 }
-
