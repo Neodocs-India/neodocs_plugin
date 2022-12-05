@@ -140,7 +140,7 @@ class _PageState extends State<ReportPage> with TickerProviderStateMixin {
                       SizedBox(
                         height: 24.h,
                       ),
-                      ShareView(data: widget.data),
+                      //ShareView(data: widget.data),
                       SizedBox(
                         height: 48.h,
                       ),

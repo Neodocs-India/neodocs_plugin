@@ -66,7 +66,7 @@ class _CameraState extends State<CaptureScreen>
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
   late Map<String, String>
-      extraData; // = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
+      extraData;// = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
 
   @override
   void initState() {

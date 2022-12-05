@@ -34,9 +34,9 @@ class _ScreenState extends State<DisposeStep> with TickerProviderStateMixin {
       (key, value) => debugPrint("$key:$value"),
     );
     debugPrint("UTI:");
-    widget.test['panels']['uti'].forEach(
+    /*widget.test['panels']['uti'].forEach(
       (key, value) => debugPrint("$key:$value"),
-    );
+    );*/
     animationController = AnimationController(vsync: this);
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {

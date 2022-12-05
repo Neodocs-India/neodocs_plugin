@@ -22,10 +22,11 @@ class StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String cardType = mapCardType(results['kit_type']);
     if (isBiomarker) {
       time = DateTime.parse(results["date_of_test"]);
     } else {
-      time = DateTime.parse(results['panels']['wellness']['details']
+      time = DateTime.parse(results['panels'][cardType]['details']
           ['biomarker_details'][0]["date_of_test"]);
     }
     animationController.forward();
@@ -185,5 +186,22 @@ class StatusCard extends StatelessWidget {
                 )),
           );
         });
+  }
+
+  mapCardType(type) {
+    switch (type) {
+      case "WEL":
+        return "wellness";
+      case "UTI":
+        return "uti";
+      case "CKD":
+        return "ckd";
+      case "PRG":
+        return "pregnancy";
+      case "ELD":
+        return "elderly";
+      default:
+        return "Wellness";
+    }
   }
 }
