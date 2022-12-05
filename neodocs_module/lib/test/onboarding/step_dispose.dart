@@ -9,10 +9,13 @@ import 'package:lottie/lottie.dart';
 
 import '../../constants/custom_decorations.dart';
 import '../../widgets/new_elevated_button.dart';
+import 'report_page.dart';
 
 class DisposeStep extends StatefulWidget {
+  final Map<String, dynamic> test;
   const DisposeStep({
     Key? key,
+    required this.test,
   }) : super(key: key);
 
   @override
@@ -26,12 +29,21 @@ class _ScreenState extends State<DisposeStep> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    debugPrint("Data:");
+    widget.test.forEach(
+      (key, value) => debugPrint("$key:$value"),
+    );
+    debugPrint("UTI:");
+    widget.test['panels']['uti'].forEach(
+      (key, value) => debugPrint("$key:$value"),
+    );
     animationController = AnimationController(vsync: this);
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         log("Lottie Completed");
       }
     });
+
     super.initState();
   }
 
@@ -143,9 +155,13 @@ class _ScreenState extends State<DisposeStep> with TickerProviderStateMixin {
                                         horizontal: size.width * 0.048),
                                     child: NewElevatedButton(
                                       onPressed: () {
-                                        Navigator.pushNamedAndRemoveUntil(
-                                            context, '/', (_) => false);
-                                        SystemNavigator.pop();
+                                        // Navigator.pushNamedAndRemoveUntil(
+                                        //     context, '/', (_) => false);
+                                        // SystemNavigator.pop();
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (_) => ReportPage(
+                                                    data: widget.test)));
                                       },
                                       text: "Done",
                                       margin: EdgeInsets.zero,
