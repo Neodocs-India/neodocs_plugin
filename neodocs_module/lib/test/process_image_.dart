@@ -374,8 +374,9 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                                 Navigator.of(context)
                                                     .pushReplacement(
                                                   MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        const DisposeStep(),
+                                                    builder: (_) => DisposeStep(
+                                                      test: data,
+                                                    ),
                                                   ),
                                                 );
                                                 platformCallback.invokeMethod(
