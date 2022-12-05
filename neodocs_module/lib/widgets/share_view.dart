@@ -15,10 +15,12 @@ import 'report_pdf_view.dart';
 
 class ShareView extends StatefulWidget {
   final Map<String, dynamic> data;
+  final String cardType;
 
   const ShareView({
     Key? key,
     required this.data,
+    required this.cardType,
   }) : super(key: key);
 
   @override
@@ -175,7 +177,7 @@ class ViewState extends State<ShareView> {
   Future<void> _print(Action action) async {
     pdfDoc = pdf.Document();
 
-    ReportPdf pdfView = ReportPdf(test: widget.data);
+    ReportPdf pdfView = ReportPdf(test: widget.data, cardType: widget.cardType);
     String path = await pdfView.getReport();
 
     final pdfImage = pdf.MemoryImage(
@@ -202,7 +204,7 @@ class ViewState extends State<ShareView> {
     } else if (action == Action.Download) {
       Directory appDocDir = await getApplicationDocumentsDirectory();
       File downloadToFile = File(
-          '${appDocDir.path}/report_${result["sampleDetails"]["name"].toString().replaceAll(" ", "_")}.pdf');
+          '${appDocDir.path}/report_${(result["firstName"] + " " + result["lastName"]).toString().replaceAll(" ", "_")}.pdf');
       log(appDocDir.path.toString());
       await downloadToFile.writeAsBytes(await pdfDoc.save());
       await OpenFilex.open(downloadToFile.path);

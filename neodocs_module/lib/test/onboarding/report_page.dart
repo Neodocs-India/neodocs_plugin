@@ -22,9 +22,11 @@ class ReportPage extends StatefulWidget {
 
 class _PageState extends State<ReportPage> with TickerProviderStateMixin {
   late AnimationController animationController;
+  late String cardType;
 
   @override
   void initState() {
+    cardType = mapCardType(widget.data['kit_type']);
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     super.initState();
@@ -140,7 +142,10 @@ class _PageState extends State<ReportPage> with TickerProviderStateMixin {
                       SizedBox(
                         height: 24.h,
                       ),
-                      ShareView(data: widget.data),
+                      ShareView(
+                        data: widget.data,
+                        cardType: cardType,
+                      ),
                       SizedBox(
                         height: 48.h,
                       ),
@@ -158,6 +163,7 @@ class _PageState extends State<ReportPage> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       StatusCard(
+                        cardType: cardType,
                         results: widget.data,
                         animationController: animationController,
                         isBiomarker: false,
@@ -190,7 +196,7 @@ class _PageState extends State<ReportPage> with TickerProviderStateMixin {
   }
 
   Widget getBiomarkers(data) {
-    String cardType = mapCardType(widget.data['kit_type']);
+    cardType = mapCardType(widget.data['kit_type']);
     debugPrint(cardType);
     List panelList = data["panels"][cardType]["details"]["biomarker_details"];
     debugPrint(panelList.toString());

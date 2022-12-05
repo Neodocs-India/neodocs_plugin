@@ -12,22 +12,20 @@ class StatusCard extends StatelessWidget {
   final Map<String, dynamic> results;
   final AnimationController animationController;
   final bool isBiomarker;
+  final String cardType;
   late DateTime time;
   StatusCard({
     Key? key,
     required this.results,
     required this.animationController,
     required this.isBiomarker,
+    required this.cardType,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (isBiomarker) {
-      time = DateTime.parse(results["date_of_test"]);
-    } else {
-      time = DateTime.parse(results['panels']['wellness']['details']
-          ['biomarker_details'][0]["date_of_test"]);
-    }
+    time = DateTime.parse(results['panels'][cardType]['details']
+        ['biomarker_details'][0]["date_of_test"]);
     animationController.forward();
     final size = MediaQuery.of(context).size;
     return AnimatedBuilder(
