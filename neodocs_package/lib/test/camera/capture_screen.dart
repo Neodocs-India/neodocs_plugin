@@ -493,12 +493,12 @@ class _CameraState extends State<CaptureScreen>
       return null;
     } else {
       try {
-        String deCode = utf8.decode(base64.decode(code));
+        String deCode = utf8.decode(base64.decode(base64.normalize(code)));
         //Toast(context).showToastCamera(deCode);
         if (deCode.contains("BATCH")) {
           Map<String, dynamic> card =
               json.decode(deCode) as Map<String, dynamic>;
-          if (card["BATCH"] == "5") {
+          if ((int.tryParse(card["BATCH"])??0) >= 5) {
             return card;
           }
         } else {

@@ -201,7 +201,7 @@ class StatusCard extends StatelessWidget {
       case "ELD":
         return "elderly";
       default:
-        return "Wellness";
+        return "wellness";
     }
   }
 }

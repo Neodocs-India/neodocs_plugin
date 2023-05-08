@@ -175,6 +175,14 @@ class ViewState extends State<ShareView> {
   Future<void> _print(Action action) async {
     pdfDoc = pdf.Document();
 
+    if (widget.data["sampleDetails"] == null) {
+      Map<String, dynamic> sampleDetails = {};
+      sampleDetails["name"] = "${widget.data["firstName"]} ${widget.data["lastName"]}";
+      sampleDetails["dateOfBirth"] = DateTime.parse(widget.data["dateOfBirth"]);
+      sampleDetails["gender"] = widget.data["gender"];
+      sampleDetails["gender"] = widget.data["gender"];
+      widget.data["sampleDetails"] = sampleDetails;
+    }
     ReportPdf pdfView = ReportPdf(test: widget.data);
     String path = await pdfView.getReport();
 

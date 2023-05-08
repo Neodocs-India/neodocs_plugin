@@ -375,15 +375,17 @@ class _CameraState extends State<CaptureScreen>
       setState(() {});
       Toast(context).showToastCamera("Pinch To Zoom");
       Future.delayed(const Duration(seconds: 4), () {
-        Toast(context).showToastCamera(
-          "Align the card to the Borders",
-        );
+        if (mounted) {
+          Toast(context).showToastCamera(
+            "Align the card to the Borders",
+          );
+        }
       });
     }
   }
 
   void onTakePictureButtonPressed() {
-    debugPrint("captureImage ");
+    debugPrint("-------------------------------------------------------------captureImage ");
     //_myAnalytics.trackMethod(MixPanelUtils.MP_Event_Capture);
     Map<String, String> extraInfo = {};
     extraInfo["lensDirection"] =
@@ -399,12 +401,14 @@ class _CameraState extends State<CaptureScreen>
     extraInfo["phone_os"] = _deviceData["systemVersion"];
 
     takePicture().then((XFile? file) async {
+      debugPrint("-------------------------------------------------------------captureImage 1");
       if (mounted) {
         setState(() {
           imageFile = file;
         });
 
         if (file != null) {
+          debugPrint("-------------------------------------------------------------captureImage 2 ");
           RScanResult result;
           try {
             /*var image = img.decodeJpg(File(file.path).readAsBytesSync())!;
@@ -431,9 +435,11 @@ class _CameraState extends State<CaptureScreen>
             result = await RScan.scanImageMemory(await file.readAsBytes());
 
             if (result.message == null) {
+
               throw "no card found";
             }
           } catch (ex) {
+            debugPrint("-------------------------------------------------------------captureImage 4");
             showDialog(
                 context: context,
                 builder: (context) {
@@ -445,6 +451,7 @@ class _CameraState extends State<CaptureScreen>
           final card = validateCard(result.message!);
 
           if (card == null) {
+            debugPrint("-------------------------------------------------------------captureImage return");
             return;
           }
 
@@ -490,12 +497,12 @@ class _CameraState extends State<CaptureScreen>
       return null;
     } else {
       try {
-        String deCode = utf8.decode(base64.decode(code));
+        String deCode = utf8.decode(base64.decode(base64.normalize(code)));
         //Toast(context).showToastCamera(deCode);
         if (deCode.contains("BATCH")) {
           Map<String, dynamic> card =
               json.decode(deCode) as Map<String, dynamic>;
-          if (card["BATCH"] == "5") {
+          if ((int.tryParse(card["BATCH"])??0) >= 5) {
             return card;
           }
         } else {
