@@ -267,7 +267,7 @@ class ReportPdf {
           .replaceAll("<br>", "\n");
     }*/
 
-    List panelList = ((test["panels"] as Map<String, dynamic>).values.first as Map<String, dynamic>)["details"]["biomarker_details"].toList();
+    List panelList = ((test["panels"] as Map<String, dynamic>)["wellness"] as Map<String, dynamic>)["details"]["biomarker_details"].toList();
     panelList.sort(
         (a, b) => (a['index'] ?? 0).compareTo((b['index'] ?? 0)));
     debugPrint("-----------------------------------------------------\n");

@@ -227,6 +227,7 @@ class _PageState extends State<ReportPage> with TickerProviderStateMixin {
   }
 
   mapCardType(type) {
+    return "wellness";
     switch (type) {
       case "WEL":
         return "wellness";
