@@ -65,7 +65,7 @@ class _OnBoardingState extends State<TestOnBoarding> {
               child: MyAppBar(
                 onPressed: () {
                   if (_page == 0) {
-                    SystemNavigator.pop();
+                    Navigator.of(context).pop();
                   } else if (skipped) {
                     _pageController.jumpToPage(0);
                   } else {

@@ -9,10 +9,13 @@ import 'package:lottie/lottie.dart';
 
 import '../../constants/custom_decorations.dart';
 import '../../widgets/new_elevated_button.dart';
+import '../report_page.dart';
 
 class DisposeStep extends StatefulWidget {
+  final Map<String, dynamic> test;
+
   const DisposeStep({
-    Key? key,
+    Key? key, required  this.test,
   }) : super(key: key);
 
   @override
@@ -149,8 +152,12 @@ class _ScreenState extends State<DisposeStep> with TickerProviderStateMixin {
                                         horizontal: size.width * 0.048),
                                     child: NewElevatedButton(
                                       onPressed: () {
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop();
+                                        //Navigator.of(context).pop();
+                                        //Navigator.of(context).pop();
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (_) => ReportPage(
+                                                    data: widget.test)));
                                       },
                                       text: "Done",
                                       margin: EdgeInsets.zero,

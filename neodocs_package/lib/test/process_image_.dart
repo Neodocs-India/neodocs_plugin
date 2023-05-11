@@ -377,19 +377,19 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                             margin: EdgeInsets.zero,
                                             onPressed: () {
                                               if (!isError) {
-                                                Navigator.of(context)
-                                                    .pushReplacement(
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        const DisposeStep(),
-                                                  ),
-                                                );
                                                 platformCallback.invokeMethod(
                                                     "nativeCallback", {
                                                   "status": data["status_code"]
                                                       .toString(),
                                                   "data": data
                                                 });
+                                                Navigator.of(context)
+                                                    .pushReplacement(
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        DisposeStep(test:data),
+                                                  ),
+                                                );
                                               } else {
                                                 Navigator.of(context).pop();
                                                 platformCallback.invokeMethod(
