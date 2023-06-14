@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -6,9 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pdf;
 
 import '../../constants/custom_decorations.dart';
 import '../../widgets/new_elevated_button.dart';
+import '../../widgets/report_pdf_view.dart';
 import 'report_page.dart';
 
 class DisposeStep extends StatefulWidget {
@@ -29,22 +34,52 @@ class _ScreenState extends State<DisposeStep> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    debugPrint("Data:");
-    widget.test.forEach(
-      (key, value) => debugPrint("$key:$value"),
-    );
-    debugPrint("UTI:");
-    /*widget.test['panels']['uti'].forEach(
-      (key, value) => debugPrint("$key:$value"),
-    );*/
     animationController = AnimationController(vsync: this);
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         log("Lottie Completed");
       }
     });
+    addPathToMap();
 
     super.initState();
+  }
+
+  addPathToMap() async {
+    pdf.Document pdfDoc = pdf.Document();
+
+    if (widget.test["sampleDetails"] == null) {
+      Map<String, dynamic> sampleDetails = {};
+      sampleDetails["name"] =
+          "${widget.test["firstName"]} ${widget.test["lastName"]}";
+      sampleDetails["dateOfBirth"] = DateTime.parse(widget.test["dateOfBirth"]);
+      sampleDetails["gender"] = widget.test["gender"];
+      sampleDetails["gender"] = widget.test["gender"];
+      widget.test["sampleDetails"] = sampleDetails;
+    }
+    ReportPdf pdfView = ReportPdf(test: widget.test);
+    String path = await pdfView.getReport();
+
+    final pdfImage = pdf.MemoryImage(
+      File(path).readAsBytesSync(),
+    );
+
+    pdfDoc.addPage(pdf.Page(
+        orientation: pdf.PageOrientation.portrait,
+        pageFormat: PdfPageFormat.a4,
+        margin: pdf.EdgeInsets.zero,
+        build: (pdf.Context context) {
+          return pdf.Center(
+            child: pdf.Image(pdfImage),
+          );
+        }));
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    File downloadToFile = File(
+        '${appDocDir.path}/report_${widget.test["sampleDetails"]["name"].toString().replaceAll(" ", "_")}.pdf');
+    log(appDocDir.path.toString());
+    await downloadToFile.writeAsBytes(await pdfDoc.save());
+    widget.test['local_url'] = downloadToFile.path;
+    print("local url: ${widget.test['local_url']}");
   }
 
   @override
