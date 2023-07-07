@@ -54,7 +54,9 @@ class BioMarkerTile extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      bioMarker["display_name"].toString().contains("Ratio")?"ACR":bioMarker["display_name"].toString(),
+                      bioMarker["display_name"].toString().contains("Ratio")
+                          ? "ACR"
+                          : bioMarker["display_name"].toString(),
                       style: Theme.of(context)
                           .primaryTextTheme
                           .headlineSmall
@@ -70,7 +72,7 @@ class BioMarkerTile extends StatelessWidget {
                 children: [
                   Text.rich(
                     TextSpan(
-                        text: bioMarker['display_value'] ?? bioMarker["estimated_value"].toString(),
+                        text: bioMarker["estimated_value"].toString(),
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,

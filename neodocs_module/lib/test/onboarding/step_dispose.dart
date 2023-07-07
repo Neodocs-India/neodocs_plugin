@@ -40,46 +40,8 @@ class _ScreenState extends State<DisposeStep> with TickerProviderStateMixin {
         log("Lottie Completed");
       }
     });
-    addPathToMap();
 
     super.initState();
-  }
-
-  addPathToMap() async {
-    pdf.Document pdfDoc = pdf.Document();
-
-    if (widget.test["sampleDetails"] == null) {
-      Map<String, dynamic> sampleDetails = {};
-      sampleDetails["name"] =
-          "${widget.test["firstName"]} ${widget.test["lastName"]}";
-      sampleDetails["dateOfBirth"] = DateTime.parse(widget.test["dateOfBirth"]);
-      sampleDetails["gender"] = widget.test["gender"];
-      sampleDetails["gender"] = widget.test["gender"];
-      widget.test["sampleDetails"] = sampleDetails;
-    }
-    ReportPdf pdfView = ReportPdf(test: widget.test);
-    String path = await pdfView.getReport();
-
-    final pdfImage = pdf.MemoryImage(
-      File(path).readAsBytesSync(),
-    );
-
-    pdfDoc.addPage(pdf.Page(
-        orientation: pdf.PageOrientation.portrait,
-        pageFormat: PdfPageFormat.a4,
-        margin: pdf.EdgeInsets.zero,
-        build: (pdf.Context context) {
-          return pdf.Center(
-            child: pdf.Image(pdfImage),
-          );
-        }));
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    File downloadToFile = File(
-        '${appDocDir.path}/report_${widget.test["sampleDetails"]["name"].toString().replaceAll(" ", "_")}.pdf');
-    log(appDocDir.path.toString());
-    await downloadToFile.writeAsBytes(await pdfDoc.save());
-    widget.test['local_url'] = downloadToFile.path;
-    print("local url: ${widget.test['local_url']}");
   }
 
   @override

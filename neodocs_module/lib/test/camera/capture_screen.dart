@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:neodocs_module/test/camera/recheck_image.dart';
 import 'package:neodocs_module/widgets/light_button.dart';
 import 'package:r_scan/r_scan.dart';
+import 'package:scan/scan.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../widgets/custom_app_bar.dart';
@@ -66,7 +67,7 @@ class _CameraState extends State<CaptureScreen>
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
   late Map<String, String>
-      extraData;// = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
+      extraData; // = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
 
   @override
   void initState() {
@@ -102,7 +103,6 @@ class _CameraState extends State<CaptureScreen>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
-
   }
 
   void getExtraData() async {
@@ -292,7 +292,8 @@ class _CameraState extends State<CaptureScreen>
 
   void showInSnackBar(String message) {
     // ignore: deprecated_member_use
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
@@ -385,7 +386,8 @@ class _CameraState extends State<CaptureScreen>
   }
 
   void onTakePictureButtonPressed() {
-    debugPrint("-------------------------------------------------------------captureImage ");
+    debugPrint(
+        "-------------------------------------------------------------captureImage ");
     //_myAnalytics.trackMethod(MixPanelUtils.MP_Event_Capture);
     Map<String, String> extraInfo = {};
     extraInfo["lensDirection"] =
@@ -401,15 +403,17 @@ class _CameraState extends State<CaptureScreen>
     extraInfo["phone_os"] = _deviceData["systemVersion"];
 
     takePicture().then((XFile? file) async {
-      debugPrint("-------------------------------------------------------------captureImage 1");
+      debugPrint(
+          "-------------------------------------------------------------captureImage 1");
       if (mounted) {
         setState(() {
           imageFile = file;
         });
 
         if (file != null) {
-          debugPrint("-------------------------------------------------------------captureImage 2 ");
-          RScanResult result;
+          debugPrint(
+              "-------------------------------------------------------------captureImage 2 ");
+          String? result;
           try {
             /*var image = img.decodeJpg(File(file.path).readAsBytesSync())!;
             LuminanceSource source;
@@ -432,14 +436,15 @@ class _CameraState extends State<CaptureScreen>
 
             var reader = QRCodeReader();
             result = reader.decode(bitmap);*/
-            result = await RScan.scanImageMemory(await file.readAsBytes());
+            // result = await RScan.scanImageMemory(await file.readAsBytes());
+            result = await Scan.parse(file.path);
 
-            if (result.message == null) {
-
+            if (result == null) {
               throw "no card found";
             }
           } catch (ex) {
-            debugPrint("-------------------------------------------------------------captureImage 4");
+            debugPrint(
+                "-------------------------------------------------------------captureImage 4");
             showDialog(
                 context: context,
                 builder: (context) {
@@ -448,14 +453,15 @@ class _CameraState extends State<CaptureScreen>
             //Toast(context).showToastCamera("Error in image");
             return;
           }
-          final card = validateCard(result.message!);
+          final card = validateCard(result);
 
           if (card == null) {
-            debugPrint("-------------------------------------------------------------captureImage return");
+            debugPrint(
+                "-------------------------------------------------------------captureImage return");
             return;
           }
 
-          debugPrint(result.message!);
+          debugPrint(result);
 
           //showInSnackBar('Picture saved to ${file.path}');
           debugPrint("captureImage path : ${file.path}");
@@ -502,7 +508,7 @@ class _CameraState extends State<CaptureScreen>
         if (deCode.contains("BATCH")) {
           Map<String, dynamic> card =
               json.decode(deCode) as Map<String, dynamic>;
-          if ((int.tryParse(card["BATCH"])??0) >= 5) {
+          if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
             return card;
           }
         } else {
