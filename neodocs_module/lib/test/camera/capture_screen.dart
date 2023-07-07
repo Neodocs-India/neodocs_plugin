@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:neodocs_module/test/camera/recheck_image.dart';
 import 'package:neodocs_module/widgets/light_button.dart';
-import 'package:r_scan/r_scan.dart';
 import 'package:scan/scan.dart';
 import 'package:uuid/uuid.dart';
 
