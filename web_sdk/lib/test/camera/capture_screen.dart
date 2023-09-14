@@ -27,8 +27,7 @@ import 'package:image/image.dart' as imgLib;
 class CaptureScreen extends StatefulWidget {
   final DateTime startTime;
   final Map<String, dynamic> user;
-  const CaptureScreen(
-      {Key? key, required this.startTime, required this.user})
+  const CaptureScreen({Key? key, required this.startTime, required this.user})
       : super(key: key);
 
   @override
@@ -51,7 +50,8 @@ class _CameraState extends State<CaptureScreen>
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
   //final Stream<html.ImageData> imageStream = Stream();
-  final StreamController<ByteBuffer> streamController = StreamController<ByteBuffer>();
+  final StreamController<ByteBuffer> streamController =
+      StreamController<ByteBuffer>();
 
   late StreamSubscription _imageStreamSubscription;
 
@@ -59,12 +59,19 @@ class _CameraState extends State<CaptureScreen>
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
-  late Map<String, String> extraData = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
+  late Map<String, String> extraData = {
+    "userId": "userId",
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "gender": "male",
+    "dateOfBirth": "1651047119",
+    "apiKey": "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"
+  };
   final List<Future> futures = [];
   late final OpenCV cv;
   int count = 0;
   late int height, width;
-  int srcWidth = 1, srcHeight =1;
+  int srcWidth = 1, srcHeight = 1;
   late int canvasWidth, canvasHeight;
   static const viewId = 'canvas-view';
   static const canvasId = 'dstFl';
@@ -107,23 +114,21 @@ class _CameraState extends State<CaptureScreen>
     //ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
       viewId,
-          (_) => html.CanvasElement()
+      (_) => html.CanvasElement()
         ..setAttribute('id', canvasId)
         ..setAttribute('style', 'width: 100%; height: 100%'),
     );
     /*WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 4),startCapture);
     });*/
-
   }
 
-  void getExtraData() async {
-
-  }
+  void getExtraData() async {}
 
   _getDeviceInfo() async {
     if (kIsWeb) {
-      _deviceData = (await deviceInfoPlugin.webBrowserInfo) as Map<String, dynamic>;
+      _deviceData =
+          (await deviceInfoPlugin.webBrowserInfo) as Map<String, dynamic>;
     }
   }
 
@@ -134,12 +139,10 @@ class _CameraState extends State<CaptureScreen>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-
-  }
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
 
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +169,7 @@ class _CameraState extends State<CaptureScreen>
               return Image.memory(upload);
             },
           ),*/
-      /*StreamBuilder<ByteBuffer>(
+          /*StreamBuilder<ByteBuffer>(
       stream: streamController.stream,
           builder: (_, buffer) {
             if (!buffer.hasData) {
@@ -220,7 +223,7 @@ class _CameraState extends State<CaptureScreen>
               children: [
                 const Spacer(),
                 LightButton(
-                    onPressed:(click || processing)
+                    onPressed: (click || processing)
                         ? null
                         : onTakePictureButtonPressed,
                     child: const LightButtonText("Take photo")),
@@ -236,7 +239,6 @@ class _CameraState extends State<CaptureScreen>
   }
 
   Widget cameraWidget(context) {
-
     // fetch screen size
     final size = MediaQuery.of(context).size;
 
@@ -244,8 +246,10 @@ class _CameraState extends State<CaptureScreen>
     // this is actually size.aspectRatio / (1 / camera.aspectRatio)
     // because camera preview size is received as landscape
     // but we're calculating for portrait orientation
-    var scale = size.aspectRatio;//(Size(srcWidth.toDouble(),srcWidth.toDouble()).aspectRatio);
-    debugPrint("${size.width}, ${size.height},----${image?.cols}, ${image?.rows},----${srcWidth}, ${srcWidth},");
+    var scale = size
+        .aspectRatio; //(Size(srcWidth.toDouble(),srcWidth.toDouble()).aspectRatio);
+    debugPrint(
+        "${size.width}, ${size.height},----${image?.cols}, ${image?.rows},----${srcWidth}, ${srcWidth},");
     // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
 
@@ -284,41 +288,40 @@ class _CameraState extends State<CaptureScreen>
           }
           canvasHeight = canvasWidth;
           //Future.delayed(const Duration(seconds: 2),startCapture);
-          return  AspectRatio(
-          aspectRatio: 1,
-          child: SizedBox(
-            child:Stack(
-              children: [
-                HtmlElementView(
-                  viewType: viewId,
-                  onPlatformViewCreated: (_) {
-                    processFrame();
-                    if (kDebugMode) {
-                      print('Created platform view');
-                    }
-                  },
-                ),
-
-                Container(
-                  margin: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.175,
-                      bottom: MediaQuery.of(context).size.height * 0.125),
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.fitHeight,
-                      image: AssetImage('assets/images/img_card_frame.png'),
+          return AspectRatio(
+            aspectRatio: 1,
+            child: SizedBox(
+              child: Stack(
+                children: [
+                  HtmlElementView(
+                    viewType: viewId,
+                    onPlatformViewCreated: (_) {
+                      processFrame();
+                      if (kDebugMode) {
+                        print('Created platform view');
+                      }
+                    },
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height * 0.175,
+                        bottom: MediaQuery.of(context).size.height * 0.125),
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fitHeight,
+                        image: AssetImage('assets/images/img_card_frame.png'),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-              );
+          );
         },
       ),
     );
 
-      /*Listener(
+    /*Listener(
         onPointerDown: (_) => _pointers++,
         onPointerUp: (_) => _pointers--,
         child:
@@ -353,7 +356,6 @@ class _CameraState extends State<CaptureScreen>
       );*/
   }
 
-
   void onTakePictureButtonPressed() {
     setState(() {
       click = true;
@@ -386,8 +388,8 @@ class _CameraState extends State<CaptureScreen>
     );
   }*/
 
-  Map<String,dynamic> getMap(){
-    Map<String,dynamic> map = {};
+  Map<String, dynamic> getMap() {
+    Map<String, dynamic> map = {};
     map["uId"] = extraData["userId"]; //add userId to here
     map["firstName"] = extraData["firstName"];
     map["lastName"] = extraData["lastName"];
@@ -404,27 +406,28 @@ class _CameraState extends State<CaptureScreen>
     map["apiKey"] = extraData["apiKey"]; //add apiKey to here
     return map;
   }
+
   processFrame() async {
     final mat = getFrame();
     image = mat;
-    if (click  && !processing) {
+    if (click && !processing) {
       processing = true;
       click = false;
       if (await detectMarkers()) {
         captured = true;
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (_) => RecheckImageScreen(
-                map: getMap(), ratio: 1,image:finalImage!)));
+                map: getMap(), ratio: 1, image: finalImage!)));
       }
       processing = false;
 
       setState(() {});
     }
-    if(!captured){
-      Future.delayed(const Duration(milliseconds: 60),processFrame);
+    if (!captured) {
+      Future.delayed(const Duration(milliseconds: 60), processFrame);
     }
     cv.imshow(canvasId, image!);
-    Future.delayed(const Duration(milliseconds: 140),()=>mat.delete());
+    Future.delayed(const Duration(milliseconds: 140), () => mat.delete());
   }
 
   Future<bool> detectMarkers() async {
@@ -435,11 +438,11 @@ class _CameraState extends State<CaptureScreen>
 
     final imgData = ctx
         .getImageData(
-      max(0, ((srcWidth - width) / 2).round()),
-      max(0, ((srcHeight - height) / 2).round()),
-      min(srcWidth, ((srcWidth + width) / 2).round()),
-      min(srcHeight, ((srcHeight + height) / 2).round()),
-    )
+          max(0, ((srcWidth - width) / 2).round()),
+          max(0, ((srcHeight - height) / 2).round()),
+          min(srcWidth, ((srcWidth + width) / 2).round()),
+          min(srcHeight, ((srcHeight + height) / 2).round()),
+        )
         .data
         .buffer;
 
@@ -449,7 +452,7 @@ class _CameraState extends State<CaptureScreen>
       bytes: imgData,
       numChannels: 4,
     );
-    final bytes = imgLib.encodePng(uploadImage, singleFrame: true);
+    final bytes = imgLib.encodeJpg(uploadImage);
     finalImage = MemoryImage(bytes);
 
     final dict = cv.getDefaultDict();
@@ -469,10 +472,10 @@ class _CameraState extends State<CaptureScreen>
       validateCard(_qr ?? "");
     });*/
 
-    if(x.length >=2){
+    if (x.length >= 2) {
       //todo:
       return true;
-    }else{
+    } else {
       showDialog(
           context: context,
           builder: (context) {
@@ -521,7 +524,7 @@ class _CameraState extends State<CaptureScreen>
         //Toast(context).showToastCamera(deCode);
         if (deCode.contains("BATCH")) {
           Map<String, dynamic> card =
-          json.decode(deCode) as Map<String, dynamic>;
+              json.decode(deCode) as Map<String, dynamic>;
           if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
             return card;
           }
@@ -540,6 +543,4 @@ class _CameraState extends State<CaptureScreen>
           return widget;
         });
   }
-
 }
-

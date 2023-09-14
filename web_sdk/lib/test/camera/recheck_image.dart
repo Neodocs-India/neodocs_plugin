@@ -18,7 +18,8 @@ class RecheckImageScreen extends StatefulWidget {
   final double ratio;
   final MemoryImage image;
 
-  const RecheckImageScreen({Key? key, required this.map, required this.ratio, required  this.image})
+  const RecheckImageScreen(
+      {Key? key, required this.map, required this.ratio, required this.image})
       : super(key: key);
 
   @override
@@ -67,16 +68,17 @@ class _ImageCapturedState extends State<RecheckImageScreen> {
               ),
               Expanded(
                 child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    margin: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).size.width * 0.05),
-                    child:  ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: //AssetImage('assets/images/img_card_frame_.png'),
-                        Image(
-                          image: widget.image,
-                          fit: BoxFit.fitHeight,
-                        )),),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  margin: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).size.width * 0.05),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: //AssetImage('assets/images/img_card_frame_.png'),
+                          Image(
+                        image: widget.image,
+                        fit: BoxFit.fitHeight,
+                      )),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -106,7 +108,10 @@ class _ImageCapturedState extends State<RecheckImageScreen> {
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (_) => ProcessImageScreen(
-                                          map: widget.map,
+                                          map: {
+                                            ...widget.map,
+                                            'fileData': widget.image.bytes
+                                          },
                                         )));
                           } else {
                             showDialog(
@@ -124,11 +129,10 @@ class _ImageCapturedState extends State<RecheckImageScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: TextButton(
                         onPressed: () async {
-
                           Navigator.of(context)
                               .pushReplacement(MaterialPageRoute(
                                   builder: (_) => CaptureScreen(
-                                        startTime:DateTime.now(),
+                                        startTime: DateTime.now(),
                                         user: widget.map,
                                       )));
                         },

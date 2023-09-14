@@ -18,11 +18,9 @@ import '../widgets/new_elevated_button.dart';
 import '../widgets/report_pdf_view.dart';
 import 'onboarding/step_dispose.dart';
 
-
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
-
 
 const inProgressColor = Color(0xff5ec792);
 const todoColor = Color(0xffd1d2d7);
@@ -68,8 +66,11 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     process.endpoint.listen((event) {
       endpoint = event;
       if (event.isNotEmpty) {
-        process.uploadImage(File(widget.map['path']), event["url"] ?? "",
-            Map<String, String>.from(event["fields"] as Map));
+        process.uploadImage(
+            widget.map['fileData'],
+            event["url"] ?? "",
+            Map<String, String>.from(event["fields"] as Map)
+              ..addAll({'fileName': widget.map['testId']}));
       }
     }, onError: (error) {
       debugPrint(error.toString());
@@ -168,14 +169,12 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     }
   }
 
-
   addPathToMap() async {
     pdf.Document pdfDoc = pdf.Document();
 
     if (data["sampleDetails"] == null) {
       Map<String, dynamic> sampleDetails = {};
-      sampleDetails["name"] =
-      "${data["firstName"]} ${data["lastName"]}";
+      sampleDetails["name"] = "${data["firstName"]} ${data["lastName"]}";
       sampleDetails["dateOfBirth"] = DateTime.parse(data["dateOfBirth"]);
       sampleDetails["gender"] = data["gender"];
       sampleDetails["gender"] = data["gender"];
@@ -198,14 +197,14 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
           );
         }));
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    File downloadToFile = File(
-        '${appDocDir.path}/report_${data["testId"].toString()}.pdf');
+    File downloadToFile =
+        File('${appDocDir.path}/report_${data["testId"].toString()}.pdf');
     //log(appDocDir.path.toString());
     await downloadToFile.writeAsBytes(await pdfDoc.save());
     data['local_url'] = downloadToFile.path;
     print("local url: ${data['local_url']}");
   }
-  
+
   void checkInternet() async {
     final result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.none) {
@@ -433,7 +432,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                                     .pushReplacement(
                                                   MaterialPageRoute(
                                                     builder: (_) =>
-                                                        DisposeStep(test:data),
+                                                        DisposeStep(test: data),
                                                   ),
                                                 );
                                               } else {

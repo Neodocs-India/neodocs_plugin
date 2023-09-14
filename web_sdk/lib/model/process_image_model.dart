@@ -1,6 +1,6 @@
-
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -8,49 +8,47 @@ import 'package:web_socket_channel/io.dart';
 
 import '../provider/neodocs_api.dart';
 
-
 class ProcessImageModel {
-  var request = PublishSubject<Map<String,dynamic>>();
+  var request = PublishSubject<Map<String, dynamic>>();
   final String apiKey;
-  ProcessImageModel(this.apiKey):
-    api = NeoDocsApiImpl(apiKey);
+  ProcessImageModel(this.apiKey) : api = NeoDocsApiImpl(apiKey);
 
-  Stream<Map<String,dynamic>> get endpoint => request.stream;
+  Stream<Map<String, dynamic>> get endpoint => request.stream;
 
-  var image = PublishSubject<Map<String,dynamic>>();
-  Stream<Map<String,dynamic>> get upload => image.stream;
+  var image = PublishSubject<Map<String, dynamic>>();
+  Stream<Map<String, dynamic>> get upload => image.stream;
 
   var result = PublishSubject<Map>();
   Stream<Map> get updates => result.stream;
   late NeoDocsApi api;
 
   late WebSocket socket;
-  void createRequest(Map<String,dynamic> document) async {
+  void createRequest(Map<String, dynamic> document) async {
     try {
-      Map<String,dynamic> response = await api.createRequest(document);
+      Map<String, dynamic> response = await api.createRequest(document);
       request.sink.add(response);
-    } catch (e) {
+    } catch (e, st) {
       await Future.delayed(const Duration(milliseconds: 500));
-      debugPrint("createRequest error  : $e");
-      request.sink.addError(e);
+      debugPrint("createRequest error  : $e\n$st");
+      request.sink.addError(e, st);
     }
   }
 
   Future<WebSocket> createConnection(Map action) async {
-    socket = await WebSocket.connect('wss://jg32vow333.execute-api.ap-south-1.amazonaws.com/production');
+    socket = await WebSocket.connect(
+        'wss://jg32vow333.execute-api.ap-south-1.amazonaws.com/production');
     socket.listen((event) {
       debugPrint(event.toString());
       result.sink.add(json.decode(event));
     });
-    final map =json.encode(action);
+    final map = json.encode(action);
     socket.add(map);
     return socket;
   }
 
-  void getUpdates(String uId,String imageId) async {
-
+  void getUpdates(String uId, String imageId) async {
     try {
-      Map<String,dynamic> response = await api.getUpdates(uId,imageId);
+      Map<String, dynamic> response = await api.getUpdates(uId, imageId);
       result.sink.add(response);
     } catch (e) {
       await Future.delayed(Duration(milliseconds: 500));
@@ -59,9 +57,11 @@ class ProcessImageModel {
     }
   }
 
-  void uploadImage(File file,String url,Map<String,String> fields) async {
+  void uploadImage(
+      Uint8List fileData, String url, Map<String, String> fields) async {
     try {
-      Map<String,dynamic> response = await api.uploadImage(file,url,fields);
+      Map<String, dynamic> response =
+          await api.uploadImage(fileData, url, fields);
       image.sink.add(response);
     } catch (e) {
       await Future.delayed(const Duration(milliseconds: 500));
@@ -76,5 +76,3 @@ class ProcessImageModel {
     image.close();
   }
 }
-
-
