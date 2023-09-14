@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+    <base href="$FLUTTER_BASE_HREF" />
+
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
+
+    <!-- iOS meta tags & icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="opencv_wasm" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <title>opencv_wasm</title>
+    <link rel="manifest" href="manifest.json" />
+
+    <script>
+      // The value below is injected by flutter build, do not touch.
+      var serviceWorkerVersion = null;
+    </script>
+    <!-- This script adds the flutter initialization JS code -->
+    <script src="flutter.js" defer></script>
+  </head>
+  <body>
+    <video id="stream" width="480" height="640"></video>
+    <canvas id="src" width="480" height="640"></canvas>
+    <script>
+      window.addEventListener("load", function (ev) {
+        // Download main.dart.js
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+          onEntrypointLoaded: function (engineInitializer) {
+            engineInitializer.initializeEngine().then(function (appRunner) {
+              appRunner.runApp();
+            });
+          },
+        });
+      });
+    </script>
+    <script>
+      async function startStream() {
+        let video = document.getElementById("stream");
+        let canvas = document.getElementById("src");
+        await navigator.mediaDevices
+          .getUserMedia({
+            video: {
+              facingMode: "environment",
+              // height: { min: 640, ideal: 1024, max: 1400 },
+              // width: { min: 480, ideal: 768, max: 1050 },
+              // height: { min: 1024, ideal: 1024, max: 1024 },
+              // width: { min: 768, ideal: 768, max: 768 },
+            },
+          })
+          .then(function (stream) {
+            const streamSettings = stream.getVideoTracks()[0].getSettings();
+            let width = streamSettings.width;
+            let height = streamSettings.height;
+
+            console.log(`SOURCE - w: ${width} | h: ${height}`);
+
+            // const newWidth = height * (3 / 4);
+            // if (width < newWidth) {
+            //   height = width * (4 / 3);
+            // } else {
+            //   width = newWidth;
+            // }
+            // console.log(`CONVERTED - w: ${width} | h: ${height}`);
+
+            // window.srcWidth = width;
+            // window.srcHeight = height;
+
+            width = width.toString();
+            height = height.toString();
+
+            video.setAttribute("width", width);
+            video.setAttribute("height", height);
+            canvas.setAttribute("width", width);
+            canvas.setAttribute("height", height);
+
+            video.srcObject = stream;
+            video.play();
+            window.stopCamera = () => stream.getTracks()[0].stop();
+          })
+          .catch(function (err) {
+            console.log("An error occurred! " + err);
+          });
+        return video;
+      }
+      function getContext() {
+        let canvasFrame = document.getElementById("src");
+        return canvasFrame.getContext("2d", {
+          willReadFrequently: true,
+        });
+      }
+    </script>
+    <script async src="opencv.js" type="text/javascript"></script>
+  </body>
+</html>

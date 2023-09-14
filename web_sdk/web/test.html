@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open CV JS Test</title>
+  </head>
+  <body>
+    <!--
+    <div
+      style="
+        width: 400px;
+        height: 300px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: 2px solid red;
+      "
+    ></div>
+    -->
+    <video id="stream" width="400" height="300"></video>
+    <table cellpadding="0" cellspacing="0" width="0" border="0">
+      <tbody>
+        <tr>
+          <td>STREAM</td>
+          <td>OUTPUT</td>
+        </tr>
+        <tr>
+          <td>
+            <canvas id="src" width="400" height="300"></canvas>
+            <!-- <img id="image" src="assets/demo.jpeg"></img> -->
+          </td>
+          <td>
+            <canvas id="output" width="400" height="300"></canvas>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <script>
+      function onOpenCvReady() {
+        cv.then((val) => {
+          cv = val;
+          console.log("OPEN CV is ready!");
+          startStream();
+        });
+      }
+
+      function getVideo() {
+        let video = document.getElementById("stream");
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: false })
+          .then(function (stream) {
+            video.srcObject = stream;
+            video.play();
+            window.stopCamera = () => stream.getTracks()[0].stop();
+          })
+          .catch(function (err) {
+            console.log("An error occurred! " + err);
+          });
+        return video;
+      }
+
+      function startStream() {
+        _stopStream = false;
+        let video = getVideo();
+        let height = 300;
+        let width = 400;
+        let canvasFrame = document.getElementById("src");
+        let context = canvasFrame.getContext("2d", {
+          willReadFrequently: true,
+        });
+        let src = new cv.Mat(height, width, cv.CV_8UC4);
+        let dst = new cv.Mat(height, width, cv.CV_8UC4);
+        const FPS = 30;
+
+        let dict = cv.getPredefinedDictionary(cv.DICT_4X4_250);
+        let detP = new cv.aruco_DetectorParameters();
+        let refP = new cv.aruco_RefineParameters(10, 3, false);
+        let ad = new cv.aruco_ArucoDetector(dict, detP, refP);
+
+        function processVideo() {
+          let begin = Date.now();
+          context.drawImage(video, 0, 0, width, height);
+          src.data.set(context.getImageData(0, 0, width, height).data);
+          cv.cvtColor(src, dst, cv.COLOR_RGBA2RGB);
+          let res = new cv.MatVector();
+          let ids = new cv.Mat();
+          let rejected = new cv.MatVector();
+          ad.detectMarkers(dst, res, ids, rejected);
+
+          //const i = ids.data.filter((val) => val != 0);
+          //if (i.length != 0) console.log(`IDs: ${i}`);
+
+          cv.drawDetectedMarkers(dst, res, ids);
+          cv.imshow("output", dst);
+          let delay = 1000 / FPS - (Date.now() - begin);
+          if (window._stopStream) stopCamera();
+          else setTimeout(processVideo, delay);
+        }
+        setTimeout(processVideo, 0);
+      }
+
+      window.stopStream = () => (_stopStream = true);
+    </script>
+    <script
+      async
+      src="opencv.js"
+      onload="onOpenCvReady();"
+      type="text/javascript"
+    ></script>
+  </body>
+</html>
