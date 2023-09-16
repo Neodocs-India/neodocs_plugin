@@ -6,6 +6,9 @@ import 'dart:typed_data';
 
 import 'package:js/js.dart';
 
+@JS('window.user')
+external String? get user;
+
 @JS('console.dir')
 external void inspectJS(dynamic obj);
 

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web SDK Integration Test</title>
+    <script>
+      function sendMessage() {
+        const url = "https://neodocs-test--sdk-react-test-13wf2yof.web.app";
+        const sdk = window.open(url);
+
+        window.addEventListener("message", function (e) {
+          if (e.source === sdk) {
+            e.preventDefault();
+            const data = JSON.parse(e.data);
+            if (!("message" in data)) {
+              return console.log("Data from Flutter: ", data);
+            }
+
+            const msg = data["message"];
+
+            console.log("Message from Flutter: ", msg);
+
+            if (msg.toLowerCase() == "userdata") {
+              const obj = {
+                userId: "userId",
+                firstName: "firstName",
+                lastName: "lastName",
+                gender: "male",
+                dateOfBirth: "1651047119",
+                apiKey: "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0",
+              };
+              console.log("Sending data");
+              sdk.postMessage(JSON.stringify(obj), url);
+            }
+          } else {
+            console.log(`Received message from ${e.origin}: ${e.data}`);
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Integration Test!!</h1>
+    <!--
+      <iframe
+      id="neodocs-sdk"
+      src="https://neodocs-test--sdk-2co6klqs.web.app"
+      frameborder="0"
+      width="300"
+      height="720"
+      ></iframe>
+    <script>
+      window.onmessage = function (e) {
+        console.log("GOT FROM IFRAME: ", e.data);
+      };
+      
+      function sendMessage() {
+        const iframe = document.getElementById("neodocs-sdk");
+        iframe.contentWindow.postMessage(
+          JSON.stringify({ message: "HELLO FROM HTML!!!" }),
+          "*"
+          );
+        }
+      </script>
+    -->
+  </body>
+</html>

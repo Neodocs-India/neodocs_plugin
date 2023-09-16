@@ -38,6 +38,15 @@
     </script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
+    <script>
+      window.addEventListener("message", function (e) {
+        if (e.source === window.opener) {
+          e.preventDefault();
+          console.log(`GOT MESSAGE: `, e.data);
+          window.user = e.data;
+        }
+      });
+    </script>
   </head>
   <body>
     <video id="stream" width="480" height="640"></video>

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:web_sdk/comm.dart';
 
 import 'constants/app_themes.dart';
 import 'firebase_options.dart';
@@ -35,14 +36,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Comm.sendMessage('Flutter Loaded');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SDK Demo',
       theme: AppThemes.newBrightTheme,
       builder: BotToastInit(),
-      home:
-      const TestOnBoarding(
-        user: {"userId":""},
+      home: const TestOnBoarding(
+        user: {"userId": ""},
       ),
     );
   }
