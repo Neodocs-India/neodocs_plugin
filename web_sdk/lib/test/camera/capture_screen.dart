@@ -130,7 +130,7 @@ class _CameraState extends State<CaptureScreen>
     Comm.sendMessage('userdata');
     var gotData = false;
     while (!gotData) {
-      await Future.delayed(const Duration(milliseconds: 200), () {
+      await Future.delayed(const Duration(milliseconds: 25), () {
         if (user != null) {
           gotData = true;
         }
