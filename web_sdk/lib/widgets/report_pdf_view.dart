@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' as io;
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide TextStyle, Image;
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../constants/app_font_family.dart';
 import '../constants/app_colors.dart';
@@ -17,11 +16,11 @@ class ReportPdf {
     init();
   }
 
-  late double screenHeight = 3508;
-  late double screenWidth = 2480;
+  late double screenHeight = 3508/3;
+  late double screenWidth = 2480/3;
 
-  late double pixelsPerOneMM = 10;
-  late double pixelsPerOneCM = 65;
+  late double pixelsPerOneMM = 10/3;
+  late double pixelsPerOneCM = 65/3;
 
   late PictureRecorder recorder;
   late Canvas canvas;
@@ -77,7 +76,7 @@ class ReportPdf {
             const Offset(0.0, 0.0), Offset(screenWidth, screenHeight)));
   }
 
-  Future<String> getReport() async {
+  Future<Uint8List>  getReport() async {
     logo = await loadUiImage(base64Logo);
     footer = await loadUiImage(base64Footer);
 
@@ -399,7 +398,12 @@ class ReportPdf {
     return decodeImageFromList(base64.decode(base64Image));
   }
 
-  Future<String> saveImage(Image image) async {
+  Future<Uint8List> saveImage(Image image) async {
+    var pngBytes = await image.toByteData(format: ImageByteFormat.png);
+    return pngBytes!.buffer.asUint8List();
+  }
+
+  /*Future<String> saveImage(Image image) async {
     var pngBytes = await image.toByteData(format: ImageByteFormat.png);
     // Use plugin [path_provider] to export image to storage
     io.Directory directory = await getTemporaryDirectory();
@@ -410,7 +414,7 @@ class ReportPdf {
     file.writeAsBytesSync(pngBytes!.buffer.asInt8List());
     print(file.path);
     return file.path;
-  }
+  }*/
 
   final directoryName = 'NeoDocs';
 

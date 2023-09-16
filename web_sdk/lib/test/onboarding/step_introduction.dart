@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -29,11 +30,13 @@ class _StepIntroductionState extends State<StepIntroduction> {
   @override
   void initState() {
     _controller = YoutubePlayerController.fromVideoId(
-      videoId: '<video-id>',
+      videoId: 'ZPhzIoAGw0A',
       autoPlay: false,
-      params: const YoutubePlayerParams(showFullscreenButton: true,
+      params: const YoutubePlayerParams(
+        showFullscreenButton: false,
         mute: false,
-        loop: true,),
+        showControls: true,
+        loop: false,),
     );
     super.initState();
   }
@@ -148,8 +151,28 @@ class _StepIntroductionState extends State<StepIntroduction> {
                             aspectRatio: 16 / 9,
                             child: Container(
                               color: Colors.black,
-                              child: YoutubePlayer(
+                              child: /*YoutubeValueBuilder(
+                                controller: _controller, // This can be omitted, if using `YoutubePlayerControllerProvider`
+                                builder: (context, value) {
+                                  return IconButton(
+                                    icon: Icon(
+                                      value.playerState == PlayerState.playing
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                    ),
+                                    onPressed: (value.playerState == PlayerState.paused || value.playerState == PlayerState.playing)
+                                        ? () {
+                                      value.playerState == PlayerState.playing
+                                          ? _controller.pauseVideo()
+                                          : _controller.playVideo();
+                                    }
+                                        : null,
+                                  );
+                                },
+                              ),*/
+                              YoutubePlayer(
                                 controller: _controller,
+
                                 /*progressColors: const ProgressBarColors(
                                   playedColor: Colors.amber,
                                   handleColor: Colors.amberAccent,

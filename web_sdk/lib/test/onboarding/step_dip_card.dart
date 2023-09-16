@@ -193,7 +193,7 @@ class _StepDipCardState extends State<StepDipCard>
       child: Container(
         padding: const EdgeInsets.all(10),
         child: Lottie.asset(
-          "assets/lottie/2_dip_strip_in_cup.json",
+          "assets/lottie/step_3.json",
           controller: animationController,
           repeat: true,
           onLoaded: (composition) async {

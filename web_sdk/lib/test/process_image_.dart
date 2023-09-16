@@ -33,8 +33,7 @@ class ProcessImageScreen extends StatefulWidget {
   _ProcessImageScreenState createState() => _ProcessImageScreenState();
 }
 
-class _ProcessImageScreenState extends State<ProcessImageScreen>
-    with TickerProviderStateMixin {
+class _ProcessImageScreenState extends State<ProcessImageScreen> with TickerProviderStateMixin {
   int _processIndex = 0;
   late AnimationController animationController;
   StreamSubscription? listener;
@@ -127,7 +126,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
         data = map;
         if (map['processed_flag'] != null && map['processed_flag']) {
           if (isComplete) {
-            process.socket.close();
+            process.socket.sink.close();
           }
           if (map["status_code"] != 200) {
             isError = true;
@@ -149,7 +148,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
             listener?.cancel();
           } else if (map["isComplete"] == true && map["status_code"] == 200) {
             listener?.cancel();
-            addPathToMap();
+            //addPathToMap();
             setState(() {
               isComplete = true;
               _processIndex = 2;
@@ -169,7 +168,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     }
   }
 
-  addPathToMap() async {
+  /*addPathToMap() async {
     pdf.Document pdfDoc = pdf.Document();
 
     if (data["sampleDetails"] == null) {
@@ -203,7 +202,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     await downloadToFile.writeAsBytes(await pdfDoc.save());
     data['local_url'] = downloadToFile.path;
     print("local url: ${data['local_url']}");
-  }
+  }*/
 
   void checkInternet() async {
     final result = await Connectivity().checkConnectivity();

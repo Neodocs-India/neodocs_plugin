@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:web_socket_channel/io.dart';
 
 import '../provider/neodocs_api.dart';
+
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ProcessImageModel {
   var request = PublishSubject<Map<String, dynamic>>();
@@ -22,7 +23,7 @@ class ProcessImageModel {
   Stream<Map> get updates => result.stream;
   late NeoDocsApi api;
 
-  late WebSocket socket;
+  late WebSocketChannel socket;
   void createRequest(Map<String, dynamic> document) async {
     try {
       Map<String, dynamic> response = await api.createRequest(document);
@@ -34,15 +35,15 @@ class ProcessImageModel {
     }
   }
 
-  Future<WebSocket> createConnection(Map action) async {
-    socket = await WebSocket.connect(
-        'wss://jg32vow333.execute-api.ap-south-1.amazonaws.com/production');
-    socket.listen((event) {
+  Future<WebSocketChannel> createConnection(Map action) async {
+    socket = WebSocketChannel.connect(
+        Uri.parse('wss://jg32vow333.execute-api.ap-south-1.amazonaws.com/production'));
+    socket.stream.listen((event) {
       debugPrint(event.toString());
       result.sink.add(json.decode(event));
     });
     final map = json.encode(action);
-    socket.add(map);
+    socket.sink.add(map);
     return socket;
   }
 

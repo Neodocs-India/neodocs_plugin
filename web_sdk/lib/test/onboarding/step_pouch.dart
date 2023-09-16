@@ -157,7 +157,7 @@ class _StepPouchState extends State<StepPouch> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.all(10),
         child: Lottie.asset(
-          "assets/lottie/open_the_pouch.json",
+          "assets/lottie/step_2.json",
           controller: animationController,
           repeat: true,
           onLoaded: (composition) async {

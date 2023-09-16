@@ -160,7 +160,7 @@ class _StepPlaceCardState extends State<StepPlaceCard>
       child: Container(
         padding: const EdgeInsets.all(10),
         child: Lottie.asset(
-          "assets/lottie/3_place_strip_on_pad.json",
+          "assets/lottie/step_4.json",
           controller: animationController,
           repeat: true,
           onLoaded: (composition) async {

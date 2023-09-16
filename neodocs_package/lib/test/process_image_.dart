@@ -15,7 +15,14 @@ import '../constants/app_colors.dart';
 import '../constants/custom_decorations.dart';
 import '../model/process_image_model.dart';
 import '../widgets/new_elevated_button.dart';
+import '../widgets/report_pdf_view.dart';
 import 'onboarding/step_dispose.dart';
+
+
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pdf;
+
 
 const inProgressColor = Color(0xff5ec792);
 const todoColor = Color(0xffd1d2d7);
@@ -141,6 +148,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
             listener?.cancel();
           } else if (map["isComplete"] == true && map["status_code"] == 200) {
             listener?.cancel();
+            addPathToMap();
             setState(() {
               isComplete = true;
               _processIndex = 2;
@@ -160,6 +168,44 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     }
   }
 
+
+  addPathToMap() async {
+    pdf.Document pdfDoc = pdf.Document();
+
+    if (data["sampleDetails"] == null) {
+      Map<String, dynamic> sampleDetails = {};
+      sampleDetails["name"] =
+      "${data["firstName"]} ${data["lastName"]}";
+      sampleDetails["dateOfBirth"] = DateTime.parse(data["dateOfBirth"]);
+      sampleDetails["gender"] = data["gender"];
+      sampleDetails["gender"] = data["gender"];
+      data["sampleDetails"] = sampleDetails;
+    }
+    ReportPdf pdfView = ReportPdf(test: data);
+    String path = await pdfView.getReport();
+
+    final pdfImage = pdf.MemoryImage(
+      File(path).readAsBytesSync(),
+    );
+
+    pdfDoc.addPage(pdf.Page(
+        orientation: pdf.PageOrientation.portrait,
+        pageFormat: PdfPageFormat.a4,
+        margin: pdf.EdgeInsets.zero,
+        build: (pdf.Context context) {
+          return pdf.Center(
+            child: pdf.Image(pdfImage),
+          );
+        }));
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    File downloadToFile = File(
+        '${appDocDir.path}/report_${data["testId"].toString()}.pdf');
+    //log(appDocDir.path.toString());
+    await downloadToFile.writeAsBytes(await pdfDoc.save());
+    data['local_url'] = downloadToFile.path;
+    print("local url: ${data['local_url']}");
+  }
+  
   void checkInternet() async {
     final result = await Connectivity().checkConnectivity();
     if (result == ConnectivityResult.none) {

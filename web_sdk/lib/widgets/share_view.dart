@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:html';
 import 'dart:io';
 
 import 'package:open_filex/open_filex.dart';
@@ -184,10 +186,10 @@ class ViewState extends State<ShareView> {
       widget.data["sampleDetails"] = sampleDetails;
     }
     ReportPdf pdfView = ReportPdf(test: widget.data);
-    String path = await pdfView.getReport();
+    final report = await pdfView.getReport();
 
     final pdfImage = pdf.MemoryImage(
-      File(path).readAsBytesSync(),
+        report
     );
 
     pdfDoc.addPage(pdf.Page(
@@ -208,12 +210,17 @@ class ViewState extends State<ShareView> {
         isPrinting = false;
       });
     } else if (action == Action.Download) {
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      File downloadToFile = File(
-          '${appDocDir.path}/report_${result["sampleDetails"]["name"].toString().replaceAll(" ", "_")}.pdf');
-      log(appDocDir.path.toString());
-      await downloadToFile.writeAsBytes(await pdfDoc.save());
-      await OpenFilex.open(downloadToFile.path);
+      pdfDoc.save().then((rawData) {
+        final content = base64Encode(rawData);
+        AnchorElement(
+            href:
+            "data:application/octet-stream;charset=utf-16le;base64,$content")
+          ..setAttribute(
+            'download',
+            '${result["sampleDetails"]["name"].toString().replaceAll(" ", "_")}_test_report.pdf',
+          )
+          ..click();
+      });
       setState(() {
         isDownloading = false;
       });

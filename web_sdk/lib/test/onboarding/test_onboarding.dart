@@ -59,6 +59,7 @@ class _OnBoardingState extends State<TestOnBoarding> {
                   });
                 },
               ),
+            if(_page != 0)
             Positioned(
               left: 20,
               top: 10,

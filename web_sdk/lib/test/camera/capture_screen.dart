@@ -415,6 +415,7 @@ class _CameraState extends State<CaptureScreen>
       click = false;
       if (await detectMarkers()) {
         captured = true;
+        stopCamera();
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (_) => RecheckImageScreen(
                 map: getMap(), ratio: 1, image: finalImage!)));

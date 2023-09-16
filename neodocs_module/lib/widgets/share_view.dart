@@ -227,4 +227,5 @@ class ViewState extends State<ShareView> {
       });
     }
   }
+
 }
