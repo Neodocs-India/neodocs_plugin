@@ -39,13 +39,15 @@
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
     <script>
-      window.addEventListener("message", function (e) {
-        if (e.source === window.opener) {
-          e.preventDefault();
-          console.log(`GOT MESSAGE: `, e.data);
-          window.user = e.data;
-        }
-      });
+      //window.onload = (_) =>
+      //  console.log(`RN WebView: ${window.ReactNativeWebView}`);
+      //window.addEventListener("message", function (e) {
+      //  e.preventDefault();
+      //  console.log(`GOT MESSAGE: `, e.data);
+      //  window.user = e.data;
+      //  // if (e.source === window.ReactNativeWebView) {
+      //  // }
+      //});
     </script>
   </head>
   <body>

@@ -33,9 +33,9 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print('Sending message to react native');
     Comm.sendMessage('Flutter Loaded');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
