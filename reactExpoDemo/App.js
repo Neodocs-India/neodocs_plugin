@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import WebView from "react-native-webview";
-import { CookieManager } from "react-native-cookies";
+// import { CookieManager } from "react-native-cookies";
 
 const html = `<!DOCTYPE html>
 <html>
@@ -14,6 +14,35 @@ const html = `<!DOCTYPE html>
     <button id="sendMessageButton">Send Message</button>
     <p id="messageReceived">this should change</p>
     <script>
+      function addPara(text) {
+        var paragraph = document.createElement('p');
+        paragraph.textContent = text;
+        document.body.appendChild(paragraph);
+      }
+
+      function display() {
+        addPara('display called');
+
+        let text;
+        if(window.ReactNativeWebView) text = 'RNWV ELEMENT PRESENT';
+        else text = 'NO ELEMENT';
+        addPara(text);
+
+        // var cookies = document.cookie.split('; ');
+        // var body = document.body;
+
+        // cookies.forEach(function(cookie) {
+        //     var parts = cookie.split('=');
+        //     var name = parts[0];
+        //     var value = parts[1];
+        //     // var value = decodeURIComponent(parts[1]);
+
+        //     addPara(name + ': ' + value);
+        // });
+      }
+
+      window.addEventListener('load', display);
+
       const sendMessageButton = document.getElementById('sendMessageButton');
       const messageReceived = document.getElementById('messageReceived');
 
@@ -38,22 +67,22 @@ const html = `<!DOCTYPE html>
 export default function App() {
   const webViewRef = useRef(null);
 
-  useEffect(() => {
-    CookieManager.set({
-      name: "name",
-      value: "nimit",
-      domain: "abcd",
-      origin: "abcd",
-      path: "/",
-      version: "1.0",
-    })
-      .then((res) => {
-        console.log("Cookie set:", res);
-      })
-      .catch((error) => {
-        console.error("Error setting cookie:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   CookieManager.set({
+  //     name: "name",
+  //     value: "nimit",
+  //     domain: "abcd",
+  //     origin: "abcd",
+  //     path: "/",
+  //     version: "1.0",
+  //   })
+  //     .then((res) => {
+  //       console.log("Cookie set:", res);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error setting cookie:", error);
+  //     });
+  // }, []);
 
   const sendMessageToWebView = () => {
     const message = "Hello from React Native!";
