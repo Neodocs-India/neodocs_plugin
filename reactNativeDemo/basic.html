@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebView Example</title>
+  </head>
+  <body>
+    <h1>Hello from WebView</h1>
+    <button id="sendMessageButton">Send Message</button>
+    <p id="messageReceived"></p>
+    <script>
+      const sendMessageButton = document.getElementById('sendMessageButton');
+      const messageReceived = document.getElementById('messageReceived');
+
+      sendMessageButton.addEventListener('click', () => {
+        window.ReactNativeWebView.postMessage('Hello from WebView!');
+      });
+
+      window.addEventListener('message', event => {
+        const message = event.data;
+        messageReceived.textContent = `Received message from React Native: ${message}`;
+      });
+    </script>
+  </body>
+</html>

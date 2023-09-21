@@ -8,6 +8,7 @@
 import React, { useRef } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Button,
   PermissionsAndroid,
   SafeAreaView,
   ScrollView,
@@ -137,40 +138,12 @@ function App(): JSX.Element {
   true;
   `
 
-  // setTimeout(() => webRef.injectJavascript(run), 2500);
-
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      {/* <View style={{width: '100%', height: '100%'}}> */}
-        <WebView
-          // geolocationEnabled={true}
-          // mediaPlaybackRequiresUserAction={false}
-          // injectedJavaScript='console.log(`iJ RNWV - ${window.ReactNativeWebView}`)'
-          // injectedJavaScriptBeforeContentLoaded='console.log(`iJBL RNWV - ${window.ReactNativeWebView}`)'
-          // injectedJavaScriptForMainFrameOnly={true}
-          // injectedJavaScriptBeforeContentLoadedForMainFrameOnly={true}
-          javaScriptEnabled={true}
-          scalesPageToFit={true}
-          mixedContentMode="compatibility"
-          // onMessage={msgListener}
-          // onMessage={(e) => alert(e.nativeEvent.data)}
-          // ref={(r) => {r?.postMessage(objStr);}}
-          html={`<!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>TEST</title>
-          </head>
-          <body>
-            <h1>TEST PAGE</h1>
-          </body>
-          </html>`}/>
-      {/* </View> */}
 
       {/* <View style={{width: '100%', height: '100%'}}>
         <WebView
@@ -215,6 +188,7 @@ function App(): JSX.Element {
       </ScrollView> */}
     </SafeAreaView>
   );
+
 }
 
 const styles = StyleSheet.create({
