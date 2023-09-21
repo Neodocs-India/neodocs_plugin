@@ -61,14 +61,7 @@ class _CameraState extends State<CaptureScreen>
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
   late final Map<String, String> extraData;
-  //  = {
-  //   "userId": "userId",
-  //   "firstName": "firstName",
-  //   "lastName": "lastName",
-  //   "gender": "male",
-  //   "dateOfBirth": "1651047119",
-  //   "apiKey": "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"
-  // };
+
   final List<Future> futures = [];
   late final OpenCV cv;
   int count = 0;
@@ -128,14 +121,25 @@ class _CameraState extends State<CaptureScreen>
 
   Future<Map<String, dynamic>> getExtraData() async {
     Comm.sendMessage('userdata');
+    if (kDebugMode) {
+      return {
+        "userId": "userId",
+        "firstName": "firstName",
+        "lastName": "lastName",
+        "gender": "male",
+        "dateOfBirth": "1651047119",
+        "apiKey": "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"
+      };
+    }
     var gotData = false;
     while (!gotData) {
-      await Future.delayed(const Duration(milliseconds: 25), () {
+      await Future.delayed(const Duration(milliseconds: 100), () {
         if (user != null) {
           gotData = true;
         }
       });
     }
+    Comm.sendMessage('Got Data');
     return jsonDecode(user!);
   }
 

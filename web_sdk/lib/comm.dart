@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:web_sdk/test/camera/opencv_interop.dart';
 
 class Comm {
   static void sendMessage(String msg) {
+    if (kDebugMode) return;
+
     final parent = html.window.opener!;
 
     // final parent = rnWebView;
