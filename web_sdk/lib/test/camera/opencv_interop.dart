@@ -6,9 +6,6 @@ import 'dart:typed_data';
 
 import 'package:js/js.dart';
 
-@JS('window.ReactNativeWebView')
-external dynamic get rnWebView;
-
 @JS('window.user')
 external String? get user;
 

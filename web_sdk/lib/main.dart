@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Sending message to react native');
     Comm.sendMessage('Flutter Loaded');
     return MaterialApp(
       debugShowCheckedModeBanner: false,

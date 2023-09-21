@@ -4,7 +4,7 @@ import "./App.css";
 
 function App() {
   const btnClick = () => {
-    const url = "https://neodocs-test--sdk-react-test-13wf2yof.web.app";
+    const url = "https://neodocs-test--sdk-react-web-ee217y6z.web.app";
     const sdk = window.open(url);
 
     window.addEventListener("message", function (e) {
@@ -15,11 +15,11 @@ function App() {
           return console.log("Data from Flutter: ", data);
         }
 
-        const msg = data["message"];
+        const msg = data["message"].toLowerCase();
 
         console.log("Message from Flutter: ", msg);
 
-        if (msg.toLowerCase() == "userdata") {
+        if (msg == "userdata") {
           const obj = {
             userId: "userId",
             firstName: "firstName",
