@@ -38,7 +38,6 @@
     </script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
-
   </head>
   <body>
     <video id="stream" width="480" height="640"></video>
@@ -47,11 +46,6 @@
     <script>
       window.addEventListener("load", function (ev) {
         // Download main.dart.js
-        if (ev.source === window.opener) {
-          ev.preventDefault();
-          console.log(`GOT MESSAGE: `, e.data);
-          window.user = e.data;
-        }
         _flutter.loader.loadEntrypoint({
           serviceWorker: {
             serviceWorkerVersion: serviceWorkerVersion,
@@ -122,8 +116,8 @@
       function receiveMessage(jsonObject) {
         console.log(`GOT MESSAGE: `, jsonObject);
         //alert("Message from Android: " + jsonObject);
-         var parsedObject = JSON.parse(jsonObject);
-        setJsonToCookie("user", parsedObject)
+        var parsedObject = JSON.parse(jsonObject);
+        setJsonToCookie("user", parsedObject);
 
         // You can perform any other actions with the message here
       }
@@ -140,11 +134,10 @@
 
         // Step 4: Set the cookie with an expiry date (optional)
         const date = new Date();
-        date.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+        date.setTime(date.getTime() + 1 * 60 * 60 * 1000);
         const expires = `expires=${date.toUTCString()};`;
         console.log(`GOT MESSAGE: `, `${cookieValue} ${expires} path=/;`);
         document.cookie = `${cookieValue} ${expires} path=/;`;
-
       }
     </script>
     <script async src="opencv.js" type="text/javascript"></script>

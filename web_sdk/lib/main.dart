@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:web_sdk/comm.dart';
 
 import 'constants/app_themes.dart';
 import 'firebase_options.dart';
@@ -35,7 +34,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Comm.sendMessage('Flutter Loaded');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SDK Demo',

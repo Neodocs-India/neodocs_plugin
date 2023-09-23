@@ -4,7 +4,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:web_sdk/comm.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../constants/custom_decorations.dart';
@@ -203,7 +202,6 @@ class _StepIntroductionState extends State<StepIntroduction> {
                           MaterialButton(
                             padding: EdgeInsets.zero,
                             onPressed: () {
-                              Comm.sendMessage('Skipped Instructions');
                               widget.onSkipped(true);
                               widget.controller.animateToPage(5,
                                   duration: const Duration(milliseconds: 600),

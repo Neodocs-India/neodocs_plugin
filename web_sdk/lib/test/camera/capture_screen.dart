@@ -13,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:r_scan/r_scan.dart';
 import 'package:uuid/uuid.dart';
-import 'package:web_sdk/comm.dart';
 import 'package:web_sdk/test/camera/recheck_image.dart';
 
 import '../../widgets/custom_app_bar.dart';
@@ -148,10 +147,10 @@ class _CameraState extends State<CaptureScreen>
     debugPrint("--------------$value");
 
     final userVal = value.split("=");
-    final cookieMap = Map<String,dynamic>.from(json.decode(userVal[1]));
+    final cookieMap = Map<String, dynamic>.from(json.decode(userVal[1]));
     debugPrint("--------------$cookieMap");
     return cookieMap;
-      //jsonDecode(user!);
+    //jsonDecode(user!);
   }
 
   _getDeviceInfo() async {
