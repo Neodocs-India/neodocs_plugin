@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 import 'dart:io';
 import 'dart:js_util';
 import 'dart:math';
@@ -120,7 +121,7 @@ class _CameraState extends State<CaptureScreen>
   }
 
   Future<Map<String, dynamic>> getExtraData() async {
-    Comm.sendMessage('userdata');
+    //Comm.sendMessage('userdata');
     if (kDebugMode) {
       return {
         "userId": "userId",
@@ -131,7 +132,7 @@ class _CameraState extends State<CaptureScreen>
         "apiKey": "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"
       };
     }
-    var gotData = false;
+    /*var gotData = false;
     while (!gotData) {
       await Future.delayed(const Duration(milliseconds: 100), () {
         if (user != null) {
@@ -139,8 +140,18 @@ class _CameraState extends State<CaptureScreen>
         }
       });
     }
-    Comm.sendMessage('Got Data');
-    return jsonDecode(user!);
+    Comm.sendMessage('Got Data');*/
+
+    final cookie = document.cookie!;
+    debugPrint("--------------$cookie");
+    String value = Uri.decodeComponent(cookie);
+    debugPrint("--------------$value");
+
+    final userVal = value.split("=");
+    final cookieMap = Map<String,dynamic>.from(json.decode(userVal[1]));
+    debugPrint("--------------$cookieMap");
+    return cookieMap;
+      //jsonDecode(user!);
   }
 
   _getDeviceInfo() async {

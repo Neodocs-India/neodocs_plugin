@@ -71,6 +71,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen> with TickerProv
             Map<String, String>.from(event["fields"] as Map)
               ..addAll({'fileName': widget.map['testId']}));
       }
+      debugPrint(event.toString());
     }, onError: (error) {
       debugPrint(error.toString());
 
@@ -84,6 +85,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen> with TickerProv
     process.upload.listen((event) {
       if (event.isNotEmpty) {
         if (mounted) {
+          debugPrint("in upload");
           setState(() {
             _processIndex = 1;
           });
@@ -147,6 +149,8 @@ class _ProcessImageScreenState extends State<ProcessImageScreen> with TickerProv
             });
             listener?.cancel();
           } else if (map["isComplete"] == true && map["status_code"] == 200) {
+            debugPrint("mounted setState");
+
             listener?.cancel();
             //addPathToMap();
             setState(() {
@@ -156,6 +160,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen> with TickerProv
             });
           } else if (map["status_code"] == 200) {
             setState(() {
+              debugPrint("mounted setState 1");
               data = map;
               _processIndex = 2;
             });

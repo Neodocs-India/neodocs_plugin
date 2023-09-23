@@ -35,14 +35,14 @@ class NeoDocsApiImpl implements NeoDocsApi {
       // "Access-Control-Allow-Origin": "*",
       // "access-control-allow-origin": "*",
     };
-    debugPrint("createRequest body : ${body}");
+    //debugPrint("createRequest body : ${body}");
     try {
       final response = await client.post(
         Uri.https(BASE_URL, REQUEST),
         body: json.encode(body),
         headers: header,
       );
-      debugPrint("createRequest response : ${response.body}");
+      //debugPrint("createRequest response : ${response.body}");
       debugPrint("createRequest  statusCode : ${response.statusCode}");
       if (response.statusCode == 200) {
         // If the call to the server was successful, parse the JSON
