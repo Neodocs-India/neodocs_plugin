@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "in.neodocs.sdkexample"
         minSdkVersion 22
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
