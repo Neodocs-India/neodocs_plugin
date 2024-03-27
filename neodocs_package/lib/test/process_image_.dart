@@ -168,8 +168,8 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
         setState(() {});
       }
     }
-    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult>? event) {
-      if (ConnectivityResult.none == event?.first && mounted && !isComplete) {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult? event) {
+      if (ConnectivityResult.none == event && mounted && !isComplete) {
         isError = true;
         errorCode = 1;
       } else {
@@ -376,7 +376,6 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                             margin: EdgeInsets.zero,
                                             onPressed: () {
                                               if (!isError) {
-
                                                 //todo: Handle error callback here
                                                 //you will have the error details in the data variable with status code
                                                 //handle it here
@@ -385,7 +384,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                                     .pushReplacement(
                                                   MaterialPageRoute(
                                                     builder: (_) =>
-                                                        DisposeStep(test:data),
+                                                        DisposeStep(test: data),
                                                   ),
                                                 );
                                               } else {
@@ -545,7 +544,6 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
       ),
     );
   }
-
 
   Widget getAssets(int index) {
     return Center(

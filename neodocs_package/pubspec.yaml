@@ -4,28 +4,29 @@ version: 1.0.1
 homepage:
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: ">=2.17.0 <3.0.0"
+
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  http: ^1.2.1
+  http: ^0.13.3
   rxdart: ^0.27.0
   web_socket_channel: ^2.2.0
 
   camera: ^0.10.5+9
-  connectivity_plus: ^6.0.1
+  connectivity_plus: ^5.0.1
   device_info_plus: ^8.2.2
   wakelock: ^0.6.1+2
-  uuid: ^4.3.3
+  uuid: ^3.0.7
 
   auto_size_text: ^3.0.0
   bot_toast: ^4.0.1
   simple_timer: ^2.0.0
 
-  lottie: ^3.1.0
+  lottie: ^1.2.2
   timelines: ^0.1.0
 
   google_mlkit_barcode_scanning: ^0.10.0
@@ -35,7 +36,7 @@ dependencies:
   youtube_player_flutter: ^9.0.0
   flutter_screenutil: ^5.9.0
 
-  flutter_svg: ^2.0.10+1
+  flutter_svg: ^1.1.6
   pdf: ^3.10.8
   intl: ^0.19.0
   printing: ^5.12.0
@@ -51,7 +52,7 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.2
+  flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
