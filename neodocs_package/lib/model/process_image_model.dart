@@ -58,7 +58,6 @@ class ProcessImageModel {
       result.sink.addError(e);
     }
   }
-
   void uploadImage(File file,String url,Map<String,String> fields) async {
     try {
       Map<String,dynamic> response = await api.uploadImage(file,url,fields);

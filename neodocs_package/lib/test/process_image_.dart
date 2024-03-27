@@ -6,7 +6,6 @@ import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:timelines/timelines.dart';
@@ -36,7 +35,7 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
   bool isComplete = false;
   bool isError = false;
   Color completeColor = AppColors.primaryColor;
-  static const platformCallback = MethodChannel('app.channel.neodocs/native');
+  //static const platformCallback = MethodChannel('app.channel.neodocs/native');
 
   late ProcessImageModel process;
   late Map<String, dynamic> data;
@@ -169,8 +168,8 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
         setState(() {});
       }
     }
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult event) {
-      if (ConnectivityResult.none == event && mounted && !isComplete) {
+    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult>? event) {
+      if (ConnectivityResult.none == event?.first && mounted && !isComplete) {
         isError = true;
         errorCode = 1;
       } else {
@@ -206,8 +205,8 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
               action: SnackBarAction(
                 label: "YES",
                 onPressed: () {
-                  platformCallback.invokeMethod(
-                      "nativeCallback", {"status": "0", "data": data});
+                  //todo: Handle user exit here
+                  //if required you could handle the case when user interrupts the process by exiting
                   Navigator.pop(context);
                 },
                 textColor: Colors.white,
@@ -377,12 +376,11 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                             margin: EdgeInsets.zero,
                                             onPressed: () {
                                               if (!isError) {
-                                                platformCallback.invokeMethod(
-                                                    "nativeCallback", {
-                                                  "status": data["status_code"]
-                                                      .toString(),
-                                                  "data": data
-                                                });
+
+                                                //todo: Handle error callback here
+                                                //you will have the error details in the data variable with status code
+                                                //handle it here
+
                                                 Navigator.of(context)
                                                     .pushReplacement(
                                                   MaterialPageRoute(
@@ -392,12 +390,9 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                                 );
                                               } else {
                                                 Navigator.of(context).pop();
-                                                platformCallback.invokeMethod(
-                                                    "nativeCallback", {
-                                                  "status": data["status_code"]
-                                                      .toString(),
-                                                  "data": data
-                                                });
+                                                //todo: Handle success callback here
+                                                //this is the event when the user clicks the Continue button on screen when the entire result is processed completely
+                                                //you will have the result with status code in the data variable
                                               }
                                             },
                                             text: isError
@@ -457,8 +452,8 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
           itemExtentBuilder: (_, __) =>
               MediaQuery.of(context).size.width * 0.9 / 3,
           indicatorBuilder: (_, index) {
-            var color;
-            var child;
+            Color color;
+            Widget child = const SizedBox.shrink();
             if (index == _processIndex && !isComplete) {
               color = inProgressColor;
               child = const Padding(
@@ -551,303 +546,6 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     );
   }
 
-  // Widget build(BuildContext context) {
-  //   return WillPopScope(
-  //     onWillPop: () async {
-  //       if (!isComplete) {
-  //         if (_processIndex < 3) {
-  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //             content: Padding(
-  //                 padding: const EdgeInsets.symmetric(vertical: 20),
-  //                 child: Text(exitMessage[_processIndex])),
-  //             action: SnackBarAction(
-  //               label: "YES",
-  //               onPressed: () {
-  //                 platformCallback.invokeMethod(
-  //                     "nativeCallback", {"status": "0", "data": data});
-  //                 Navigator.pop(context);
-  //               },
-  //               textColor: Colors.white,
-  //             ),
-  //             backgroundColor: AppColors.primaryColor,
-  //             duration: Duration(seconds: 3),
-  //           ));
-  //         } else {
-  //           Navigator.pop(context);
-  //         }
-  //       }
-  //       return false;
-  //     },
-  //     child: Scaffold(
-  //       backgroundColor: Colors.white,
-  //       body: SafeArea(
-  //         child: Container(
-  //           padding:
-  //               EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.05),
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.stretch,
-  //             children: [
-  //               Padding(
-  //                 padding: const EdgeInsets.symmetric(vertical: 10.0),
-  //                 child: Stack(
-  //                   alignment: Alignment.centerLeft,
-  //                   children: [
-  //                     Align(
-  //                       alignment: Alignment.center,
-  //                       child: Text(
-  //                         "Results",
-  //                         style: Theme.of(context).textTheme.titleLarge,
-  //                         textAlign: TextAlign.center,
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               Expanded(flex: 5, child: getAssets(_processIndex)),
-  //               SizedBox(
-  //                 height: MediaQuery.of(context).size.width * 0.03,
-  //               ),
-  //               Padding(
-  //                 padding: EdgeInsets.symmetric(
-  //                   horizontal: MediaQuery.of(context).size.width * 0.1,
-  //                 ),
-  //                 child: Text(
-  //                   isError
-  //                       ? error[errorCode]
-  //                       : isComplete
-  //                           ? _processes[3]
-  //                           : _processes[_processIndex],
-  //                   textAlign: TextAlign.center,
-  //                   style: Theme.of(context)
-  //                       .textTheme
-  //                       .titleLarge
-  //                       ?.copyWith(color: AppColors.primaryColor),
-  //                 ),
-  //               ),
-  //               Padding(
-  //                   padding: EdgeInsets.symmetric(
-  //                     horizontal: MediaQuery.of(context).size.width * 0.05,
-  //                   ),
-  //                   child: SizedBox(
-  //                     height: MediaQuery.of(context).size.height * 0.1,
-  //                     child: getTimeLine(),
-  //                   )),
-  //               Expanded(
-  //                   flex: 2,
-  //                   child: isComplete
-  //                       ? Padding(
-  //                           padding: EdgeInsets.only(
-  //                               left: MediaQuery.of(context).size.width * 0.05,
-  //                               right: MediaQuery.of(context).size.width * 0.05,
-  //                               bottom: 10),
-  //                           child: Column(
-  //                               mainAxisAlignment:
-  //                                   MainAxisAlignment.spaceBetween,
-  //                               crossAxisAlignment: CrossAxisAlignment.stretch,
-  //                               children: [
-  //                                 if (isError)
-  //                                   Padding(
-  //                                     padding:
-  //                                         const EdgeInsets.only(bottom: 10.0),
-  //                                     child: AutoSizeText.rich(
-  //                                       TextSpan(
-  //                                         text: errorDetails[errorCode],
-  //                                         style: Theme.of(context)
-  //                                             .textTheme
-  //                                             .bodyMedium,
-  //                                       ),
-  //                                       textAlign: TextAlign.center,
-  //                                     ),
-  //                                   ),
-  //                                 DarkButton(
-  //                                   onPressed: () {
-  //                                     if (!isError) {
-  //                                       //Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-  //                                       Navigator.of(context).pop();
-  //                                       Navigator.of(context).pop();
-  //                                       platformCallback.invokeMethod(
-  //                                           "nativeCallback", {
-  //                                         "status":
-  //                                             data["status_code"].toString(),
-  //                                         "data": data
-  //                                       });
-  //                                     } else {
-  //                                       Navigator.of(context).pop();
-  //                                       platformCallback.invokeMethod(
-  //                                           "nativeCallback", {
-  //                                         "status":
-  //                                             data["status_code"].toString(),
-  //                                         "data": data
-  //                                       });
-  //                                     }
-  //                                   },
-  //                                   child: DarkButtonText(
-  //                                       isError ? "Try Again" : "Continue"),
-  //                                 ),
-  //                               ]))
-  //                       : Padding(
-  //                           padding: EdgeInsets.only(
-  //                               left: MediaQuery.of(context).size.width * 0.05,
-  //                               right: MediaQuery.of(context).size.width * 0.05,
-  //                               bottom: 10.0),
-  //                           child: RichText(
-  //                             text: TextSpan(
-  //                                 text: '',
-  //                                 style: Theme.of(context).textTheme.labelLarge,
-  //                                 children: <TextSpan>[
-  //                                   TextSpan(
-  //                                     text:
-  //                                         'It might take some time to analyse your card. Please do not press the back button.\n',
-  //                                     style:
-  //                                         Theme.of(context).textTheme.bodyLarge,
-  //                                   ),
-  //                                 ]),
-  //                             textAlign: TextAlign.center,
-  //                           ),
-  //                         )),
-  //               Container(
-  //                 padding: EdgeInsets.symmetric(vertical: 10),
-  //                 width: MediaQuery.of(context).size.width,
-  //                 color: AppColors.white,
-  //                 child: Text.rich(
-  //                   TextSpan(
-  //                     text: "Caution : ",
-  //                     children: [
-  //                       TextSpan(
-  //                         text: "For Research Use Only",
-  //                         style: Theme.of(context)
-  //                             .textTheme
-  //                             .bodySmall!
-  //                             .copyWith(
-  //                                 color: AppColors.primaryColor,
-  //                                 fontStyle: FontStyle.italic),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
-  //                       fontSize: 16,
-  //                       color: AppColors.primaryColor,
-  //                       fontStyle: FontStyle.italic,
-  //                       fontWeight: FontWeight.w400),
-  //                   textAlign: TextAlign.center,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget getTimeLine() {
-  //   return Center(
-  //     child: Timeline.tileBuilder(
-  //       theme: TimelineThemeData(
-  //         direction: Axis.horizontal,
-  //         connectorTheme: ConnectorThemeData(
-  //           space: 30.0,
-  //           thickness: 5.0,
-  //         ),
-  //       ),
-  //       builder: TimelineTileBuilder.connected(
-  //         connectionDirection: ConnectionDirection.before,
-  //         itemExtentBuilder: (_, __) =>
-  //             MediaQuery.of(context).size.width * 0.9 / 3,
-  //         indicatorBuilder: (_, index) {
-  //           var color;
-  //           var child;
-  //           if (index == _processIndex && !isComplete) {
-  //             color = inProgressColor;
-  //             child = const Padding(
-  //               padding: EdgeInsets.all(8.0),
-  //               child: CircularProgressIndicator(
-  //                 strokeWidth: 3.0,
-  //                 valueColor: AlwaysStoppedAnimation(Colors.white),
-  //               ),
-  //             );
-  //           } else if (index < _processIndex || isComplete) {
-  //             color = completeColor;
-  //             child = Icon(
-  //               isError ? Icons.cancel_outlined : Icons.check,
-  //               color: Colors.white,
-  //               size: 15.0,
-  //             );
-  //           } else {
-  //             color = todoColor;
-  //           }
-
-  //           if (index <= _processIndex) {
-  //             return Stack(
-  //               children: [
-  //                 CustomPaint(
-  //                   size: Size(30.0, 30.0),
-  //                   painter: _BezierPainter(
-  //                     color: color,
-  //                     drawStart: index > 0,
-  //                     drawEnd: index < _processIndex,
-  //                   ),
-  //                 ),
-  //                 DotIndicator(
-  //                   size: 30.0,
-  //                   color: color,
-  //                   child: child,
-  //                 ),
-  //               ],
-  //             );
-  //           } else {
-  //             return Stack(
-  //               children: [
-  //                 CustomPaint(
-  //                   size: Size(15.0, 15.0),
-  //                   painter: _BezierPainter(
-  //                     color: color,
-  //                     drawEnd: index < 2,
-  //                   ),
-  //                 ),
-  //                 OutlinedDotIndicator(
-  //                   borderWidth: 4.0,
-  //                   color: color,
-  //                 ),
-  //               ],
-  //             );
-  //           }
-  //         },
-  //         connectorBuilder: (_, index, type) {
-  //           if (index > 0) {
-  //             if (index == _processIndex && !isComplete) {
-  //               final prevColor = getColor(index - 1);
-  //               final color = getColor(index);
-  //               List<Color> gradientColors;
-  //               if (type == ConnectorType.start) {
-  //                 gradientColors = [Color.lerp(prevColor, color, 0.5)!, color];
-  //               } else {
-  //                 gradientColors = [
-  //                   prevColor,
-  //                   Color.lerp(prevColor, color, 0.5)!
-  //                 ];
-  //               }
-  //               return DecoratedLineConnector(
-  //                 decoration: BoxDecoration(
-  //                   gradient: LinearGradient(
-  //                     colors: gradientColors,
-  //                   ),
-  //                 ),
-  //               );
-  //             } else {
-  //               return SolidLineConnector(
-  //                 color: getColor(index),
-  //               );
-  //             }
-  //           } else {
-  //             return null;
-  //           }
-  //         },
-  //         itemCount: 3,
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget getAssets(int index) {
     return Center(
@@ -901,11 +599,11 @@ class _BezierPainter extends CustomPainter {
 
     final radius = size.width / 2;
 
-    var angle;
-    var offset1;
-    var offset2;
+    double angle;
+    Offset offset1;
+    Offset offset2;
 
-    var path;
+    Path path;
 
     if (drawStart) {
       angle = 3 * pi / 4;

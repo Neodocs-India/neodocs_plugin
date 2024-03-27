@@ -103,8 +103,8 @@ class _MidStreamState extends State<NewWaitedEnoughDialog> {
                     ),
                   ),
                   style: TextButton.styleFrom(
-                    primary: Colors.white.withOpacity(0.05),
-                    onSurface: Colors.white.withOpacity(0.05),
+                    foregroundColor: Colors.white.withOpacity(0.05),
+                    disabledForegroundColor: Colors.white.withOpacity(0.05).withOpacity(0.38),
                     backgroundColor: Colors.white.withOpacity(0.05),
                     minimumSize: Size(double.infinity, 40),
                     side: BorderSide(color: Color(0XFF6B60F1), width: 1),

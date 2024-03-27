@@ -195,7 +195,7 @@ class _StepCollectUrineState extends State<StepCollectUrine>
       child: Container(
         padding: EdgeInsets.all(size.height * 0.0092),
         child: Lottie.asset(
-          "packages/neodocs_package/assets/lottie/1_fill_cup.json",
+          "packages/neodocs_package/assets/lottie/step_1.json",
           controller: animationController,
           repeat: true,
           onLoaded: (composition) async {

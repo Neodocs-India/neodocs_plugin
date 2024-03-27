@@ -30,7 +30,6 @@ class _OnBoardingState extends State<TestOnBoarding> {
   @override
   void initState() {
     super.initState();
-    //WidgetsBinding.instance.addPostFrameCallback((_)=> Future.delayed(const Duration(seconds: 2),()=> setState(() {})));
   }
 
   @override
@@ -50,15 +49,8 @@ class _OnBoardingState extends State<TestOnBoarding> {
               controller: _pageController,
               onPageChanged: _onPageViewChange,
             ),
-            if (_page == 0)
-              StepIntroduction(
-                controller: _pageController,
-                onSkipped: (skip) {
-                  setState(() {
-                    skipped = skip;
-                  });
-                },
-              ),
+
+
             Positioned(
               left: 20,
               top: 10,
@@ -84,7 +76,14 @@ class _OnBoardingState extends State<TestOnBoarding> {
 
   List<Widget> _buildPages() {
     return [
-      Container(),
+      StepIntroduction(
+        controller: _pageController,
+        onSkipped: (skip) {
+          setState(() {
+            skipped = skip;
+          });
+        },
+      ),
       StepCollectUrine(
         controller: _pageController,
       ),
