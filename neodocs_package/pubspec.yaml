@@ -16,10 +16,10 @@ dependencies:
   web_socket_channel: ^2.2.0
 
   camera: 0.10.3+2
-  connectivity_plus: ^2.2.1
-  device_info_plus: ^3.2.1
+  connectivity_plus: ^4.0.1
+  device_info_plus: ^8.2.2
   wakelock: ^0.6.1+2
-  uuid: ^3.0.6
+  uuid: ^3.0.7
 
   auto_size_text: ^3.0.0
   bot_toast: ^4.0.1
@@ -29,23 +29,24 @@ dependencies:
   timelines: ^0.1.0
 
   r_scan: ^0.1.6+1
-  path_provider: ^2.0.9
+  path_provider: ^2.0.12
 
   youtube_player_flutter: ^8.1.1
   flutter_screenutil: ^5.6.0
 
   flutter_svg: ^1.1.6
-  pdf: 3.8.4
-  intl: ^0.17.0
-  printing: ^5.9.3
+  pdf: ^3.8.3
+  intl: ^0.18.0
+  printing: ^5.11.0
 
-  open_filex: ^3.4.0
+  open_filex: ^4.3.2
   flutter_staggered_grid_view: ^0.6.2
 
 # dependency_overrides:
 #   camera_android: 0.9.7+1
 #   camera_avfoundation: 0.9.7+1
-
+dependency_overrides:
+  intl: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
