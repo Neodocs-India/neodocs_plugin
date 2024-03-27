@@ -55,11 +55,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final Map<String, String> map = {
-    "userId": "userId",
-    "firstName": "firstName",
-    "lastName": "lastName",
-    "gender": "gender",
-    "dateOfBirth": "${DateTime.now().millisecondsSinceEpoch}",
+    "userId": "uId",
+    "firstName": "Jhon",
+    "lastName": "Doe",
+    "gender": "male",
+    "dateOfBirth": "${DateTime.now().millisecondsSinceEpoch}",//time in milliseconds
     "apiKey": "NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"
   };
 

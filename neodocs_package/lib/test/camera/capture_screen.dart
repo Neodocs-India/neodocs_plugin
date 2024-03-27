@@ -5,16 +5,13 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:neodocs_package/test/camera/recheck_image.dart';
-import 'package:neodocs_package/widgets/dark_back_button.dart';
-import 'package:r_scan/r_scan.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../widgets/custom_app_bar.dart';
-import '../../widgets/dark_button.dart';
 import '../../widgets/light_button.dart';
 import '../../widgets/toast_widget.dart';
 import 'dialog_card_expired.dart';
@@ -26,23 +23,22 @@ class CaptureScreen extends StatefulWidget {
   final Map user;
 
   const CaptureScreen(
-      {Key? key,
+      {super.key,
       required this.cameras,
       required this.startTime,
-      required this.user})
-      : super(key: key);
+      required this.user});
 
   @override
-  _CameraState createState() {
+  State createState() {
     return _CameraState();
   }
 }
 
 void logError(String code, String? message) {
   if (message != null) {
-    print('Error: $code\nError Message: $message');
+    debugPrint('Error: $code\nError Message: $message');
   } else {
-    print('Error: $code');
+    debugPrint('Error: $code');
   }
 }
 
@@ -51,63 +47,22 @@ class _CameraState extends State<CaptureScreen>
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
-  static const platform = MethodChannel('app.channel.neodocs/native');
+  final BarcodeScanner _barcodeScanner = BarcodeScanner();
 
   CameraController? controller;
   XFile? imageFile;
   bool enableAudio = false;
-  double _minAvailableExposureOffset = 0.0;
-  double _maxAvailableExposureOffset = 0.0;
-  double _currentExposureOffset = 0.0;
-  late AnimationController _flashModeControlRowAnimationController;
-  late Animation<double> _flashModeControlRowAnimation;
-  late AnimationController _exposureModeControlRowAnimationController;
-  late Animation<double> _exposureModeControlRowAnimation;
-  late AnimationController _focusModeControlRowAnimationController;
-  late Animation<double> _focusModeControlRowAnimation;
-  double _minAvailableZoom = 1.0;
-  double _maxAvailableZoom = 1.0;
-  double _currentScale = 1.0;
-  double _baseScale = 1.0;
 
-  // Counting pointers (number of user fingers on screen)
-  int _pointers = 0;
-  late Map<String, dynamic>
-      extraData; // = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
+  late Map<String, dynamic> extraData;
+  // extraData = {"userId":"userId","firstName":"firstName","lastName":"lastName","gender":"male","dateOfBirth":"1651047119","apiKey":"NCqeTHkBa2QTdwM3H2UXO4H9iQbb4N1eXNKbzVi0"};
 
   @override
   void initState() {
     super.initState();
-    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _getDeviceInfo();
-
     getExtraData();
-
     onNewCameraSelected(widget.cameras[0]);
-    _flashModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _flashModeControlRowAnimation = CurvedAnimation(
-      parent: _flashModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
-    _exposureModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _exposureModeControlRowAnimation = CurvedAnimation(
-      parent: _exposureModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
-    _focusModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _focusModeControlRowAnimation = CurvedAnimation(
-      parent: _focusModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
   }
 
   void getExtraData() async {
@@ -125,11 +80,9 @@ class _CameraState extends State<CaptureScreen>
 
   @override
   void dispose() {
-    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
-    _flashModeControlRowAnimationController.dispose();
-    _exposureModeControlRowAnimationController.dispose();
-    controller?.dispose();
     super.dispose();
+    controller?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
@@ -240,55 +193,28 @@ class _CameraState extends State<CaptureScreen>
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
-    return Listener(
-      onPointerDown: (_) => _pointers++,
-      onPointerUp: (_) => _pointers--,
-      child: CameraPreview(
-        controller!,
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onScaleStart: _handleScaleStart,
-            onScaleUpdate: _handleScaleUpdate,
-            onTapDown: (TapDownDetails details) =>
-                onViewFinderTap(details, constraints),
-            child: Stack(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.175,
-                      bottom: MediaQuery.of(context).size.height * 0.125),
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.fitHeight,
-                      image: AssetImage(
-                          'packages/neodocs_package/assets/images/img_card_frame.png'),
-                    ),
-                  ),
+    return CameraPreview(
+      controller!,
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        return Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.175,
+                  bottom: MediaQuery.of(context).size.height * 0.125),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.fitHeight,
+                  image: AssetImage(
+                      'packages/neodocs_package/assets/images/img_card_frame.png'),
                 ),
-              ],
+              ),
             ),
-          );
-        }),
-      ),
+          ],
+        );
+      }),
     );
-  }
-
-  void _handleScaleStart(ScaleStartDetails details) {
-    _baseScale = _currentScale;
-  }
-
-  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
-    // When there are not exactly two fingers on screen don't scale
-    if (controller == null || _pointers != 2) {
-      return;
-    }
-
-    _currentScale = (_baseScale * details.scale)
-        .clamp(_minAvailableZoom, _maxAvailableZoom);
-
-    await controller!.setZoomLevel(_currentScale);
   }
 
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
@@ -320,8 +246,8 @@ class _CameraState extends State<CaptureScreen>
 
     final CameraController cameraController = CameraController(
       cameraDescription,
-      ResolutionPreset.max,
-      enableAudio: enableAudio,
+      ResolutionPreset.medium,
+      enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -352,24 +278,6 @@ class _CameraState extends State<CaptureScreen>
 
     try {
       await cameraController.initialize();
-      await Future.wait(<Future<Object?>>[
-        // The exposure mode is currently not supported on the web.
-        ...!kIsWeb
-            ? <Future<Object?>>[
-                cameraController.getMinExposureOffset().then(
-                    (double value) => _minAvailableExposureOffset = value),
-                cameraController
-                    .getMaxExposureOffset()
-                    .then((double value) => _maxAvailableExposureOffset = value)
-              ]
-            : <Future<Object?>>[],
-        cameraController
-            .getMaxZoomLevel()
-            .then((double value) => _maxAvailableZoom = value),
-        cameraController
-            .getMinZoomLevel()
-            .then((double value) => _minAvailableZoom = value),
-      ]);
     } on CameraException catch (e) {
       _showCameraException(e);
     }
@@ -408,57 +316,38 @@ class _CameraState extends State<CaptureScreen>
         });
 
         if (file != null) {
-          RScanResult result;
+          String? result;
           try {
-            /*var image = img.decodeJpg(File(file.path).readAsBytesSync())!;
-            LuminanceSource source;
-            if(Platform.isAndroid) {
-              source = RGBLuminanceSource(
-                  image.height, image.width,
-                  image
-                      .getBytes(format: img.Format.abgr)
-                      .buffer
-                      .asInt32List());
-            }else{
-              source = RGBLuminanceSource(
-                  image.width, image.height,
-                  image
-                      .getBytes(format: img.Format.abgr)
-                      .buffer
-                      .asInt32List());
-            }
-            var bitmap = BinaryBitmap(HybridBinarizer(source));
+            result = await readQR(file.path);
 
-            var reader = QRCodeReader();
-            result = reader.decode(bitmap);*/
-            result = await RScan.scanImageMemory(await file.readAsBytes());
-
-            if (result.message == null) {
+            if (result == null) {
               throw "no card found";
             }
           } catch (ex) {
+            debugPrint(ex.toString());
             showDialog(
                 context: context,
                 builder: (context) {
                   return const NoCardDialog();
                 });
             //Toast(context).showToastCamera("Error in image");
+            showInSnackBar('NoCardDialog');
             return;
           }
-          final card = validateCard(result.message!);
+          final card = validateCard(result);
 
           if (card == null) {
             return;
           }
 
-          debugPrint(result.message!);
+          //debugPrint(result);
 
           //showInSnackBar('Picture saved to ${file.path}');
-          debugPrint("captureImage path : ${file.path}");
-          debugPrint("captureImage name : ${file.name}");
+          //debugPrint("captureImage path : ${file.path}");
+          //debugPrint("captureImage name : ${file.name}");
           Map<String, dynamic> map = {};
           map["path"] = file.path;
-          map["uId"] = extraData["userId"]; //add userId to here
+          map["uId"] = extraData["userId"]; //add userId here
           map["firstName"] = extraData["firstName"];
           map["lastName"] = extraData["lastName"];
           map["gender"] = extraData["gender"];
@@ -473,6 +362,7 @@ class _CameraState extends State<CaptureScreen>
           map["extraInfo"] = extraInfo;
 
           map["apiKey"] = extraData["apiKey"]; //add apiKey to here
+          //debugPrint("cam ${map['uId']} ${map['testId']}");
 
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (_) => RecheckImageScreen(
@@ -480,6 +370,19 @@ class _CameraState extends State<CaptureScreen>
         }
       }
     });
+  }
+  Future<String?> readQR(path)async {
+    File imageFile = File(path);
+    final inputImage = InputImage.fromFile(imageFile);
+    final List<Barcode> barcodes = await _barcodeScanner.processImage(inputImage);
+    for (Barcode barcode in barcodes) {
+      debugPrint(barcode.displayValue);
+      if(barcode.displayValue !=null) {
+        return barcode.displayValue;
+      }
+    }
+    return null;
+
   }
 
   Map<String, dynamic>? validateCard(String code) {
@@ -493,8 +396,7 @@ class _CameraState extends State<CaptureScreen>
       return null;
     } else {
       try {
-        String deCode = utf8.decode(base64.decode(base64.normalize(code)));
-        //Toast(context).showToastCamera(deCode);
+        String deCode = utf8.decode(base64.decode(base64.normalize(code.trim())));
         if (deCode.contains("BATCH")) {
           Map<String, dynamic> card =
               json.decode(deCode) as Map<String, dynamic>;
@@ -519,202 +421,6 @@ class _CameraState extends State<CaptureScreen>
         builder: (context) {
           return widget;
         });
-  }
-
-  /*Result? decode(CameraImage image) {
-    var plane = image.planes.first;
-    LuminanceSource source = RGBLuminanceSource(
-        image.width, image.height, plane.bytes.buffer.asInt32List());
-    var bitmap = BinaryBitmap(HybridBinarizer(source));
-
-    var reader = QRCodeReader();
-    try {
-      return reader.decode(bitmap);
-    } catch (_) {
-      return null;
-    }
-  }*/
-
-  void onFlashModeButtonPressed() {
-    if (_flashModeControlRowAnimationController.value == 1) {
-      _flashModeControlRowAnimationController.reverse();
-    } else {
-      _flashModeControlRowAnimationController.forward();
-      _exposureModeControlRowAnimationController.reverse();
-      _focusModeControlRowAnimationController.reverse();
-    }
-  }
-
-  void onExposureModeButtonPressed() {
-    if (_exposureModeControlRowAnimationController.value == 1) {
-      _exposureModeControlRowAnimationController.reverse();
-    } else {
-      _exposureModeControlRowAnimationController.forward();
-      _flashModeControlRowAnimationController.reverse();
-      _focusModeControlRowAnimationController.reverse();
-    }
-  }
-
-  void onFocusModeButtonPressed() {
-    if (_focusModeControlRowAnimationController.value == 1) {
-      _focusModeControlRowAnimationController.reverse();
-    } else {
-      _focusModeControlRowAnimationController.forward();
-      _flashModeControlRowAnimationController.reverse();
-      _exposureModeControlRowAnimationController.reverse();
-    }
-  }
-
-  void onAudioModeButtonPressed() {
-    enableAudio = !enableAudio;
-    if (controller != null) {
-      onNewCameraSelected(controller!.description);
-    }
-  }
-
-  Future<void> onCaptureOrientationLockButtonPressed() async {
-    try {
-      if (controller != null) {
-        final CameraController cameraController = controller!;
-        if (cameraController.value.isCaptureOrientationLocked) {
-          await cameraController.unlockCaptureOrientation();
-          showInSnackBar('Capture orientation unlocked');
-        } else {
-          await cameraController.lockCaptureOrientation();
-          showInSnackBar(
-              'Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}');
-        }
-      }
-    } on CameraException catch (e) {
-      _showCameraException(e);
-    }
-  }
-
-  void onSetFlashModeButtonPressed(FlashMode mode) {
-    setFlashMode(mode).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-      showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
-    });
-  }
-
-  void onSetExposureModeButtonPressed(ExposureMode mode) {
-    setExposureMode(mode).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-      showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
-    });
-  }
-
-  void onSetFocusModeButtonPressed(FocusMode mode) {
-    setFocusMode(mode).then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-      showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
-    });
-  }
-
-  Future<XFile?> stopVideoRecording() async {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
-      return null;
-    }
-
-    try {
-      return cameraController.stopVideoRecording();
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      return null;
-    }
-  }
-
-  Future<void> pauseVideoRecording() async {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
-      return;
-    }
-
-    try {
-      await cameraController.pauseVideoRecording();
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-  Future<void> resumeVideoRecording() async {
-    final CameraController? cameraController = controller;
-
-    if (cameraController == null || !cameraController.value.isRecordingVideo) {
-      return;
-    }
-
-    try {
-      await cameraController.resumeVideoRecording();
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-  Future<void> setFlashMode(FlashMode mode) async {
-    if (controller == null) {
-      return;
-    }
-
-    try {
-      await controller!.setFlashMode(mode);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-  Future<void> setExposureMode(ExposureMode mode) async {
-    if (controller == null) {
-      return;
-    }
-
-    try {
-      await controller!.setExposureMode(mode);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-  Future<void> setExposureOffset(double offset) async {
-    if (controller == null) {
-      return;
-    }
-
-    setState(() {
-      _currentExposureOffset = offset;
-    });
-    try {
-      offset = await controller!.setExposureOffset(offset);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-  Future<void> setFocusMode(FocusMode mode) async {
-    if (controller == null) {
-      return;
-    }
-
-    try {
-      await controller!.setFocusMode(mode);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
   }
 
   Future<XFile?> takePicture() async {
@@ -792,10 +498,3 @@ class _CameraState extends State<CaptureScreen>
     };
   }
 }
-
-/// This allows a value of type T or T? to be treated as a value of type T?.
-///
-/// We use this so that APIs that have become non-nullable can still be used
-/// with `!` and `?` on the stable branch.
-// TODO(ianh): Remove this once we roll stable in late 2021.
-T? _ambiguate<T>(T? value) => value;
