@@ -376,10 +376,10 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                             margin: EdgeInsets.zero,
                                             onPressed: () {
                                               if (!isError) {
+                                                //todo: Handle success callback here
+                                                //this is the event when the user clicks the Continue button on screen when the entire result is processed completely
+                                                //you will have the result with status code in the data variable
 
-                                                //todo: Handle error callback here
-                                                //you will have the error details in the data variable with status code
-                                                //handle it here
 
                                                 Navigator.of(context)
                                                     .pushReplacement(
@@ -390,9 +390,9 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                                 );
                                               } else {
                                                 Navigator.of(context).pop();
-                                                //todo: Handle success callback here
-                                                //this is the event when the user clicks the Continue button on screen when the entire result is processed completely
-                                                //you will have the result with status code in the data variable
+                                                //todo: Handle error callback here
+                                                //you will have the error details in the data variable with status code
+                                                //handle it here
                                               }
                                             },
                                             text: isError
