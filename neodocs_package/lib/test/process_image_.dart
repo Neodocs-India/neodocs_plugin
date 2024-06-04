@@ -546,7 +546,6 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
     );
   }
 
-
   Widget getAssets(int index) {
     return Center(
       child: Container(

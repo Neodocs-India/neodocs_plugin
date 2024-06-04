@@ -400,7 +400,7 @@ class _CameraState extends State<CaptureScreen>
         if (deCode.contains("BATCH")) {
           Map<String, dynamic> card =
               json.decode(deCode) as Map<String, dynamic>;
-          if ((int.tryParse(card["BATCH"])??0) >= 5) {
+          if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
             return card;
           }
         } else {

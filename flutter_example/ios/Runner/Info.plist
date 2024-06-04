@@ -45,5 +45,11 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Need permission to uses camera to capture Test Card Image.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Camera requirement</string>
 </dict>
 </plist>
