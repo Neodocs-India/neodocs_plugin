@@ -80,10 +80,11 @@ class _DialogState extends State<WaitedEnoughDialog> {
                   ),
                 ),
                 style: TextButton.styleFrom(
-                  primary: AppColors.primaryColor,
+                  //primary: AppColors.primaryColor,
                   side:  const BorderSide(color: AppColors.primaryColor, width: 2),
                   shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                      borderRadius: BorderRadius.all(Radius.circular(15))
+                  ),
                 ),
               ),
               Container(

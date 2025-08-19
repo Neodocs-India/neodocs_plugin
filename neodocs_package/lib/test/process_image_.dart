@@ -168,8 +168,8 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
         setState(() {});
       }
     }
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult? event) {
-      if (ConnectivityResult.none == event && mounted && !isComplete) {
+    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult>? event) {
+      if (ConnectivityResult.none == event?.first && mounted && !isComplete) {
         isError = true;
         errorCode = 1;
       } else {
@@ -376,22 +376,23 @@ class _ProcessImageScreenState extends State<ProcessImageScreen>
                                             margin: EdgeInsets.zero,
                                             onPressed: () {
                                               if (!isError) {
-                                                //todo: Handle error callback here
-                                                //you will have the error details in the data variable with status code
-                                                //handle it here
+                                                //todo: Handle success callback here
+                                                //this is the event when the user clicks the Continue button on screen when the entire result is processed completely
+                                                //you will have the result with status code in the data variable
+
 
                                                 Navigator.of(context)
                                                     .pushReplacement(
                                                   MaterialPageRoute(
                                                     builder: (_) =>
-                                                        DisposeStep(test: data),
+                                                        DisposeStep(test:data),
                                                   ),
                                                 );
                                               } else {
                                                 Navigator.of(context).pop();
-                                                //todo: Handle success callback here
-                                                //this is the event when the user clicks the Continue button on screen when the entire result is processed completely
-                                                //you will have the result with status code in the data variable
+                                                //todo: Handle error callback here
+                                                //you will have the error details in the data variable with status code
+                                                //handle it here
                                               }
                                             },
                                             text: isError

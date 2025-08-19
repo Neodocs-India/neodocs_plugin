@@ -293,7 +293,7 @@ class _StepStartTimerState extends State<StepStartTimer>
                               ),
                             ),
                             style: TextButton.styleFrom(
-                              primary: Colors.white.withOpacity(0.05),
+                              //primary: Colors.white.withOpacity(0.05),
                               backgroundColor: Colors.white.withOpacity(0.05),
                               minimumSize: Size(double.infinity, 40.h),
                               side: const BorderSide(
