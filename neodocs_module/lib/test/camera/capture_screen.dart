@@ -7,6 +7,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:neodocs_module/test/camera/qr_decoder.dart';
 import 'package:neodocs_module/test/camera/recheck_image.dart';
 import 'package:neodocs_module/widgets/light_button.dart';
 import 'package:scan/scan.dart';
@@ -502,24 +503,27 @@ class _CameraState extends State<CaptureScreen>
       return null;
     } else {
       try {
-        String deCode = utf8.decode(base64.decode(base64.normalize(code)));
-        //Toast(context).showToastCamera(deCode);
-        if (deCode.contains("BATCH")) {
-          Map<String, dynamic> card =
-              json.decode(deCode) as Map<String, dynamic>;
-          if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
-            return card;
+        if (code.startsWith('e')) {
+          String deCode =
+              utf8.decode(base64.decode(base64.normalize(code.trim())));
+          if (deCode.contains("BATCH")) {
+            Map<String, dynamic> card =
+                json.decode(deCode) as Map<String, dynamic>;
+            if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
+              return card;
+            }
           }
         } else {
-          _showDialog(const NoCardDialog());
-          return null;
+          return decodeDataAdvanced(code);
         }
-      } catch (ex) {
+        _showDialog(const NoCardDialog());
+        return null;
+      } catch (ex, stackTrace) {
+        debugPrint('validateCard error: $ex\n$stackTrace');
         _showDialog(const NoCardDialog());
         return null;
       }
     }
-    return null;
   }
 
   _showDialog(Widget widget) {

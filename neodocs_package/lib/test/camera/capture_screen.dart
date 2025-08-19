@@ -8,6 +8,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:neodocs_package/test/camera/qr_decoder.dart';
 import 'package:neodocs_package/test/camera/recheck_image.dart';
 import 'package:uuid/uuid.dart';
 
@@ -246,7 +247,7 @@ class _CameraState extends State<CaptureScreen>
 
     final CameraController cameraController = CameraController(
       cameraDescription,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
@@ -396,23 +397,27 @@ class _CameraState extends State<CaptureScreen>
       return null;
     } else {
       try {
-        String deCode = utf8.decode(base64.decode(base64.normalize(code.trim())));
-        if (deCode.contains("BATCH")) {
-          Map<String, dynamic> card =
-              json.decode(deCode) as Map<String, dynamic>;
-          if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
-            return card;
+        if (code.startsWith('e')) {
+          String deCode =
+              utf8.decode(base64.decode(base64.normalize(code.trim())));
+          if (deCode.contains("BATCH")) {
+            Map<String, dynamic> card =
+                json.decode(deCode) as Map<String, dynamic>;
+            if ((int.tryParse(card["BATCH"]) ?? 0) >= 5) {
+              return card;
+            }
           }
         } else {
-          _showDialog(const NoCardDialog());
-          return null;
+          return decodeDataAdvanced(code);
         }
-      } catch (ex) {
+        _showDialog(const NoCardDialog());
+        return null;
+      } catch (ex, stackTrace) {
+        debugPrint('validateCard error: $ex\n$stackTrace');
         _showDialog(const NoCardDialog());
         return null;
       }
     }
-    return null;
   }
 
   _showDialog(Widget widget) {
